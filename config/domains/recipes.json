@@ -1,0 +1,123 @@
+{
+  "domain_name": "recipes",
+  "description": "Recipe finder and cooking assistant for meal planning and culinary inspiration",
+  "system_prompt": "You are Chef Maria, a passionate cooking guide. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with recipes, cooking tips, or meal planning, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses warm and encouraging, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "search_recipes",
+      "entities": [
+        "dish_type",
+        "cuisine",
+        "dietary_restrictions",
+        "cooking_time",
+        "difficulty"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/search",
+      "api_method": "GET",
+      "response_template": "Found {recipe_count} {dish_type} recipes! Cuisine: {cuisine}. Top picks: {recipe_list}. Cooking time: {cooking_time}. Difficulty: {difficulty}. Dietary: {dietary_restrictions}. Ratings: {ratings}",
+      "requires_auth": false
+    },
+    {
+      "name": "get_recipe_details",
+      "entities": [
+        "recipe_id",
+        "recipe_name"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/recipes/{recipe_id}",
+      "api_method": "GET",
+      "response_template": "{recipe_name}: {description}. Time: {total_time} ({prep_time} prep, {cook_time} cook). Servings: {servings}. Difficulty: {difficulty}. Ingredients: {ingredients_count}. Calories: {calories}/serving. Recipe: {instructions_url}",
+      "requires_auth": false
+    },
+    {
+      "name": "create_meal_plan",
+      "entities": [
+        "days",
+        "meals_per_day",
+        "dietary_preferences",
+        "people"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/meal-plans",
+      "api_method": "POST",
+      "response_template": "{days}-day meal plan created! {meals_per_day} meals/day for {people} people. Dietary: {dietary_preferences}. Plan ID: {plan_id}. Overview: {meal_overview}. Grocery list: {grocery_list_url}. Prep tips: {prep_tips}",
+      "requires_auth": true
+    },
+    {
+      "name": "find_by_ingredients",
+      "entities": [
+        "available_ingredients"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/recipes/by-ingredients",
+      "api_method": "GET",
+      "response_template": "Recipes using {available_ingredients}: {recipe_matches}. You have {matching_ingredients_count}/{total_ingredients} ingredients. Missing items: {missing_ingredients}. Easy recipes: {easy_options}",
+      "requires_auth": false
+    },
+    {
+      "name": "save_favorite",
+      "entities": [
+        "recipe_id"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/favorites",
+      "api_method": "POST",
+      "response_template": "Recipe saved to favorites! {recipe_name} added to your collection. Total favorites: {favorites_count}. Collections: {collections}. Share with: {share_options}",
+      "requires_auth": true
+    },
+    {
+      "name": "cooking_tips",
+      "entities": [
+        "technique",
+        "ingredient"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/tips",
+      "api_method": "GET",
+      "response_template": "Cooking tips for {technique} with {ingredient}: {tips}. Pro tips: {pro_tips}. Common mistakes: {mistakes}. Video tutorials: {video_links}",
+      "requires_auth": false
+    },
+    {
+      "name": "grocery_list",
+      "entities": [
+        "recipe_ids",
+        "servings"
+      ],
+      "api_endpoint": "https://api.recipes.example.com/v1/grocery-list",
+      "api_method": "POST",
+      "response_template": "Grocery list created! {recipe_count} recipes for {servings} servings. Categories: {categories}. Total items: {item_count}. Estimated cost: ${estimated_cost}. List: {grocery_items}. Export: {export_options}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "cooking_knowledge",
+    "top_k": 6,
+    "score_threshold": 0.65
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Chef Maria, your passionate cooking guide. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "inspiration": "💡 Recipe inspiration: {recipe_suggestion}",
+    "tip": "👩‍🍳 Chef's tip: {tip}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with recipes, cooking tips, or meal planning?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "cuisines": [
+      "italian",
+      "mexican",
+      "chinese",
+      "indian",
+      "thai",
+      "french",
+      "mediterranean",
+      "american"
+    ],
+    "dietary_options": [
+      "vegetarian",
+      "vegan",
+      "gluten_free",
+      "dairy_free",
+      "keto",
+      "paleo",
+      "low_carb"
+    ]
+  }
+}

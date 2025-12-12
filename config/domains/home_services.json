@@ -1,0 +1,108 @@
+{
+  "domain_name": "home_services",
+  "description": "Home services assistant for repairs, cleaning, maintenance, and home improvement",
+  "system_prompt": "You are Pat, a reliable home service coordinator. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with repairs, maintenance, or home improvements, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses helpful and efficient, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "request_service",
+      "entities": [
+        "service_type",
+        "urgency",
+        "preferred_date",
+        "description"
+      ],
+      "api_endpoint": "https://api.homeservices.example.com/v1/requests",
+      "api_method": "POST",
+      "response_template": "Service request submitted! {service_type}. Urgency: {urgency}. Preferred: {preferred_date}. Request ID: {request_id}. Estimated cost: ${estimate}. {matched_professionals} pros available. Response time: {response_time}",
+      "requires_auth": true
+    },
+    {
+      "name": "find_professionals",
+      "entities": [
+        "service_type",
+        "location",
+        "rating_minimum"
+      ],
+      "api_endpoint": "https://api.homeservices.example.com/v1/pros/search",
+      "api_method": "GET",
+      "response_template": "{service_type} professionals in {location}: {pro_list}. Ratings: {ratings}. Experience: {experience}. Pricing: {pricing}. Availability: {availability}. Licensed & insured: {licensed}",
+      "requires_auth": false
+    },
+    {
+      "name": "schedule_appointment",
+      "entities": [
+        "professional_id",
+        "service_type",
+        "date",
+        "time"
+      ],
+      "api_endpoint": "https://api.homeservices.example.com/v1/appointments",
+      "api_method": "POST",
+      "response_template": "Appointment scheduled! {service_type} with {professional_name}. {date} at {time}. Appointment ID: {appointment_id}. Address: {service_address}. Cost: ${estimated_cost}. Confirmation sent to {phone}",
+      "requires_auth": true
+    },
+    {
+      "name": "get_quote",
+      "entities": [
+        "service_type",
+        "description",
+        "square_footage"
+      ],
+      "api_endpoint": "https://api.homeservices.example.com/v1/quotes",
+      "api_method": "POST",
+      "response_template": "Quote requested for {service_type}. Description: {description}. Size: {square_footage} sq ft. Quote ID: {quote_id}. Estimated: ${estimate_range}. {quote_count} pros will respond within 24 hours. Compare quotes in your dashboard.",
+      "requires_auth": true
+    },
+    {
+      "name": "track_service",
+      "entities": [
+        "appointment_id"
+      ],
+      "api_endpoint": "https://api.homeservices.example.com/v1/appointments/{appointment_id}",
+      "api_method": "GET",
+      "response_template": "Service {appointment_id}: Status: {status}. Professional: {professional_name}. Scheduled: {scheduled_time}. ETA: {eta}. Contact: {contact_info}. Job details: {job_details}",
+      "requires_auth": true
+    },
+    {
+      "name": "report_issue",
+      "entities": [
+        "appointment_id",
+        "issue_description"
+      ],
+      "api_endpoint": "https://api.homeservices.example.com/v1/issues",
+      "api_method": "POST",
+      "response_template": "Issue reported for appointment {appointment_id}. Description: {issue_description}. Ticket: {ticket_id}. Our team will investigate and contact you within {response_time}. Resolution options: {resolution_options}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "home_maintenance_guides",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Pat, your reliable home service coordinator. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "emergency": "🚨 For emergencies (gas leaks, flooding, electrical), call 911 or your utility company immediately!",
+    "tip": "💡 Home tip: {tip}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with repairs, maintenance, or home improvements?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "emergency_number": "911",
+    "support_hotline": "1-800-HOME-HELP",
+    "service_types": [
+      "plumbing",
+      "electrical",
+      "hvac",
+      "cleaning",
+      "handyman",
+      "landscaping",
+      "painting",
+      "roofing"
+    ],
+    "coverage_area": "nationwide"
+  }
+}

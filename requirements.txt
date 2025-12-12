@@ -1,0 +1,62 @@
+# Voice-as-a-Service Platform - Dependencies
+
+# AI & NLP Core
+openai>=1.12.0
+anthropic>=0.18.0
+google-cloud-aiplatform>=1.38.0
+transformers>=4.36.0
+torch>=2.1.0
+sentence-transformers>=2.2.2
+
+# Speech Processing
+openai-whisper>=20231117
+TTS>=0.22.0  # Coqui TTS
+soundfile>=0.12.1
+librosa>=0.10.1
+
+# NLU & Intent Recognition
+rasa>=3.6.0
+rasa-sdk>=3.6.0
+detoxify>=0.5.2
+
+# Vector Database & RAG
+qdrant-client>=1.7.0
+langchain>=0.1.0
+langchain-community>=0.0.10
+
+# Databases
+redis>=5.0.1
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.23
+alembic>=1.13.1
+
+# API & Web Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-multipart>=0.0.6
+httpx>=0.26.0
+
+# Authentication & Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-dotenv>=1.0.0
+
+# Utilities
+pyyaml>=6.0.1
+python-json-logger>=2.0.7
+tenacity>=8.2.3
+asyncio>=3.4.3
+aiofiles>=23.2.1
+
+# Monitoring & Analytics
+prometheus-client>=0.19.0
+structlog>=24.1.0
+
+# Testing
+pytest>=7.4.3
+pytest-asyncio>=0.21.1
+pytest-cov>=4.1.0
+httpx>=0.26.0
+

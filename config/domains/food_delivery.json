@@ -1,0 +1,156 @@
+{
+  "domain_name": "food_delivery",
+  "description": "Food ordering and delivery service",
+  "system_prompt": "You are Foodie Sam, a friendly restaurant guide. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with restaurants, menus, or food orders, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses enthusiastic and helpful, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "search_restaurants",
+      "entities": [
+        "cuisine_type",
+        "location",
+        "price_range",
+        "dietary_restrictions"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/restaurants/search",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "I found {count} {cuisine_type} restaurants near {location}. Top options include {restaurant_names}. Which one interests you?",
+      "requires_auth": false
+    },
+    {
+      "name": "view_menu",
+      "entities": [
+        "restaurant_id",
+        "restaurant_name"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/restaurants/{restaurant_id}/menu",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Here's the menu for {restaurant_name}. They have {category_count} categories with {item_count} items. Popular choices are {popular_items}. What would you like to order?",
+      "requires_auth": false
+    },
+    {
+      "name": "add_to_cart",
+      "entities": [
+        "item_id",
+        "item_name",
+        "quantity",
+        "special_instructions"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/cart/add",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Added {quantity}x {item_name} to your cart. Your current total is ${cart_total}. Would you like to add anything else?",
+      "requires_auth": true
+    },
+    {
+      "name": "view_cart",
+      "entities": [],
+      "api_endpoint": "https://api.example-food.com/v1/cart",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Your cart has {item_count} items totaling ${subtotal}. With delivery fee (${delivery_fee}) and tax (${tax}), your total is ${total}. Ready to checkout?",
+      "requires_auth": true
+    },
+    {
+      "name": "place_order",
+      "entities": [
+        "delivery_address",
+        "payment_method",
+        "delivery_instructions"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/orders",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Order confirmed! Your order #{order_id} from {restaurant_name} will be delivered to {delivery_address} in approximately {delivery_time} minutes. You can track your order in the app.",
+      "requires_auth": true
+    },
+    {
+      "name": "track_order",
+      "entities": [
+        "order_id"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/orders/{order_id}/track",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Your order is {status}. {driver_name} is on the way and will arrive in approximately {eta} minutes. Current location: {current_location}.",
+      "requires_auth": true
+    },
+    {
+      "name": "cancel_order",
+      "entities": [
+        "order_id",
+        "reason"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/orders/{order_id}/cancel",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Your order #{order_id} has been cancelled. A refund of ${refund_amount} will be processed to your original payment method within 3-5 business days.",
+      "requires_auth": true
+    },
+    {
+      "name": "get_deals",
+      "entities": [
+        "location"
+      ],
+      "api_endpoint": "https://api.example-food.com/v1/deals",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Great deals available now: {deals_list}. These offers are valid until {expiry}. Would you like to order from any of these restaurants?",
+      "requires_auth": false
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "food_delivery_knowledge",
+    "top_k": 3,
+    "score_threshold": 0.65
+  },
+  "response_templates": {
+    "search_restaurants": "Let me find some great restaurants for you.",
+    "view_menu": "Here's what they're serving.",
+    "add_to_cart": "I've added that to your cart.",
+    "view_cart": "Here's what's in your cart.",
+    "place_order": "Processing your order now.",
+    "track_order": "Let me check on your order status.",
+    "cancel_order": "I'll cancel that order for you.",
+    "get_deals": "Here are today's special offers.",
+    "greeting": "Hi! I'm Foodie Sam, your friendly restaurant guide. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with restaurants, menus, or food orders?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-01",
+    "contact": "support@fooddelivery.example.com",
+    "supported_regions": [
+      "US",
+      "CA",
+      "UK"
+    ],
+    "payment_methods": [
+      "credit_card",
+      "debit_card",
+      "paypal",
+      "apple_pay",
+      "google_pay"
+    ]
+  }
+}

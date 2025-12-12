@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'vaas-monitor'
+
+scrape_configs:
+  - job_name: 'vaas-platform'
+    static_configs:
+      - targets: ['vaas_app:9090']
+        labels:
+          service: 'vaas'
+          
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+

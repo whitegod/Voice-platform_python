@@ -1,0 +1,26 @@
+# Minimal Dependencies for Running Without Docker
+# Install with: pip install -r requirements_minimal.txt
+
+# Core API
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# OpenAI (for all AI tasks)
+openai>=1.12.0
+
+# Utilities
+python-dotenv>=1.0.0
+httpx>=0.26.0
+aiofiles>=23.2.1
+
+# Optional: Database (if you want persistence)
+sqlalchemy>=2.0.23
+aiosqlite>=0.19.0
+
+# Optional: Better logging
+python-json-logger>=2.0.7
+
+# That's it! Much lighter than the full requirements.txt
+

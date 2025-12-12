@@ -1,0 +1,164 @@
+{
+  "domain_name": "healthcare",
+  "description": "Healthcare appointment scheduling, symptom checking, and patient support",
+  "system_prompt": "You are Dr. Sam, a caring medical assistant. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with health appointments, prescriptions, or medical questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses warm and professional, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "schedule_appointment",
+      "entities": [
+        "doctor_name",
+        "specialty",
+        "date",
+        "time",
+        "reason",
+        "patient_name"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/appointments",
+      "api_method": "POST",
+      "response_template": "Your appointment with Dr. {doctor_name} ({specialty}) is scheduled for {date} at {time}. Reason: {reason}. Confirmation sent to your phone and email. Appointment ID: {appointment_id}",
+      "requires_auth": true
+    },
+    {
+      "name": "cancel_appointment",
+      "entities": [
+        "appointment_id",
+        "reason"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/appointments/{appointment_id}/cancel",
+      "api_method": "DELETE",
+      "response_template": "Your appointment {appointment_id} has been cancelled. Cancellation reason: {reason}. No cancellation fee applies as you cancelled with sufficient notice.",
+      "requires_auth": true
+    },
+    {
+      "name": "find_doctor",
+      "entities": [
+        "specialty",
+        "location",
+        "insurance",
+        "gender",
+        "language"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/doctors/search",
+      "api_method": "GET",
+      "response_template": "Found {count} {specialty} doctors in {location} accepting {insurance}. Top options: {doctor_list}. Would you like to schedule with any of them?",
+      "requires_auth": false
+    },
+    {
+      "name": "check_symptoms",
+      "entities": [
+        "symptoms",
+        "duration",
+        "severity",
+        "age"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/symptom-checker",
+      "api_method": "POST",
+      "response_template": "Based on your symptoms ({symptoms}) lasting {duration} with {severity} severity: {assessment}. Recommendations: {recommendations}. ⚠️ This is not a diagnosis. Please consult a doctor if symptoms persist or worsen.",
+      "requires_auth": false
+    },
+    {
+      "name": "prescription_refill",
+      "entities": [
+        "medication_name",
+        "prescription_id",
+        "pharmacy"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/prescriptions/refill",
+      "api_method": "POST",
+      "response_template": "Prescription refill requested for {medication_name} (Rx: {prescription_id}). Your doctor has been notified. If approved, it will be sent to {pharmacy}. You'll be notified within 24 hours.",
+      "requires_auth": true
+    },
+    {
+      "name": "view_medical_records",
+      "entities": [
+        "record_type",
+        "date_range"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/records",
+      "api_method": "GET",
+      "response_template": "Retrieved your {record_type} records for {date_range}. {records_summary}. You can download detailed records from the patient portal.",
+      "requires_auth": true
+    },
+    {
+      "name": "get_test_results",
+      "entities": [
+        "test_type",
+        "test_date"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/lab-results",
+      "api_method": "GET",
+      "response_template": "Your {test_type} results from {test_date}: {results_summary}. Status: {status}. Your doctor will discuss these results during your next appointment. Download full report: {report_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "find_urgent_care",
+      "entities": [
+        "location",
+        "issue_type"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/urgent-care/nearby",
+      "api_method": "GET",
+      "response_template": "Nearest urgent care facilities for {issue_type}: {facility_list}. Current wait times: {wait_times}. ⚠️ For life-threatening emergencies, call 911 immediately.",
+      "requires_auth": false
+    },
+    {
+      "name": "check_insurance_coverage",
+      "entities": [
+        "procedure_name",
+        "doctor_name",
+        "insurance_plan"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/insurance/coverage",
+      "api_method": "GET",
+      "response_template": "Coverage check for {procedure_name} with Dr. {doctor_name} under {insurance_plan}: {coverage_status}. Estimated cost: {estimated_cost}. Copay: {copay}. Deductible remaining: {deductible}",
+      "requires_auth": true
+    },
+    {
+      "name": "telemedicine_consult",
+      "entities": [
+        "specialty",
+        "urgency",
+        "preferred_time"
+      ],
+      "api_endpoint": "https://api.healthcare.example.com/v1/telemedicine/schedule",
+      "api_method": "POST",
+      "response_template": "Telemedicine consultation scheduled with {specialty} for {preferred_time}. Join link will be sent 10 minutes before: {video_link}. Consultation ID: {consult_id}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "healthcare_knowledge",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Dr. Sam, your caring medical assistant. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "emergency_warning": "⚠️ If this is a medical emergency, please call 911 or go to the nearest emergency room immediately.",
+    "disclaimer": "Please note: I provide information only and cannot replace professional medical advice. Always consult with your healthcare provider for medical concerns."
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with health appointments, prescriptions, or medical questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-15",
+    "contact": "support@healthcare.example.com",
+    "hipaa_compliant": true,
+    "supported_languages": [
+      "en",
+      "es"
+    ],
+    "emergency_number": "911",
+    "business_hours": "24/7 telemedicine, office hours 8am-6pm",
+    "specialties": [
+      "primary_care",
+      "cardiology",
+      "dermatology",
+      "orthopedics",
+      "pediatrics",
+      "psychiatry",
+      "urgent_care"
+    ]
+  }
+}

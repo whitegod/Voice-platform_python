@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaaS Platform - Admin Dashboard</title>
+    
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-healthy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .domain-badge {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-block;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .domain-badge:hover {
+            background: #c7d2fe;
+            transform: scale(1.05);
+        }
+        
+        .domain-badge.active {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        
+        .sidebar {
+            background: white;
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+        }
+        
+        .nav-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: #f3f4f6;
+            border-left-color: #667eea;
+        }
+        
+        .nav-item.active {
+            background: #ede9fe;
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+        
+        .test-result {
+            background: #f9fafb;
+            border-left: 4px solid #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        
+        pre {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-6 border-b">
+            <h1 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-microphone-alt text-purple-600"></i> VaaS Platform
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">Admin Dashboard</p>
+        </div>
+        
+        <nav class="py-4">
+            <div class="nav-item active" onclick="showSection('overview')">
+                <i class="fas fa-dashboard w-6"></i> Overview
+            </div>
+            <div class="nav-item" onclick="showSection('domains')">
+                <i class="fas fa-layer-group w-6"></i> Domains
+            </div>
+            <div class="nav-item" onclick="showSection('test')">
+                <i class="fas fa-vial w-6"></i> API Tester
+            </div>
+            <div class="nav-item" onclick="showSection('analytics')">
+                <i class="fas fa-chart-line w-6"></i> Analytics
+            </div>
+            <div class="nav-item" onclick="showSection('settings')">
+                <i class="fas fa-cog w-6"></i> Settings
+            </div>
+            <div class="nav-item" onclick="showSection('docs')">
+                <i class="fas fa-book w-6"></i> Documentation
+            </div>
+        </nav>
+        
+        <div class="absolute bottom-0 w-full p-6 border-t">
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-gray-600">Status</span>
+                <span class="status-badge status-healthy" id="status-badge">Healthy</span>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+                <span id="domains-count">0</span> domains loaded
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overview-section">
+            <h2 class="text-3xl font-bold text-white mb-6">
+                <i class="fas fa-dashboard"></i> Platform Overview
+            </h2>
+            
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="metric-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Total Domains</p>
+                            <p class="text-4xl font-bold mt-2" id="total-domains">0</p>
+                        </div>
+                        <i class="fas fa-layer-group text-5xl opacity-20"></i>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Total Intents</p>
+                            <p class="text-4xl font-bold mt-2">180+</p>
+                        </div>
+                        <i class="fas fa-brain text-5xl opacity-20"></i>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Active Sessions</p>
+                            <p class="text-4xl font-bold mt-2" id="active-sessions">0</p>
+                        </div>
+                        <i class="fas fa-users text-5xl opacity-20"></i>
+                    </div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Platform Mode</p>
+                            <p class="text-2xl font-bold mt-2" id="platform-mode">Offline</p>
+                        </div>
+                        <i class="fas fa-server text-5xl opacity-20"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Health -->
+            <div class="card p-6 mb-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-heartbeat text-red-500"></i> System Health
+                </h3>
+                <div id="health-details" class="space-y-3">
+                    <!-- Health status will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-bolt text-yellow-500"></i> Quick Actions
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button class="btn-primary" onclick="testQuickQuery()">
+                        <i class="fas fa-play"></i> Quick Test
+                    </button>
+                    <button class="btn-primary" onclick="loadDomains()">
+                        <i class="fas fa-sync"></i> Refresh Domains
+                    </button>
+                    <button class="btn-primary" onclick="showSection('test')">
+                        <i class="fas fa-vial"></i> API Tester
+                    </button>
+                    <button class="btn-primary" onclick="exportLogs()">
+                        <i class="fas fa-download"></i> Export Logs
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Domains Section -->
+        <div id="domains-section" style="display:none;">
+            <h2 class="text-3xl font-bold text-white mb-6">
+                <i class="fas fa-layer-group"></i> Domain Management
+            </h2>
+            
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Available Domains</h3>
+                    <button class="btn-primary" onclick="createNewDomain()">
+                        <i class="fas fa-plus"></i> Create Domain
+                    </button>
+                </div>
+                
+                <div id="domains-list" class="space-y-4">
+                    <!-- Domains will be loaded here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Tester Section -->
+        <div id="test-section" style="display:none;">
+            <h2 class="text-3xl font-bold text-white mb-6">
+                <i class="fas fa-vial"></i> API Tester
+            </h2>
+            
+            <div class="card p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Select Domain</label>
+                    <select id="test-domain" class="w-full p-3 border rounded-lg">
+                        <option value="real_estate">Real Estate</option>
+                        <option value="food_delivery">Food Delivery</option>
+                        <option value="customer_support">Customer Support</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">User Query</label>
+                    <textarea id="test-query" class="w-full p-3 border rounded-lg h-24" placeholder="Enter your test query...">I'm looking for a 3 bedroom house in downtown</textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">User ID</label>
+                    <input type="text" id="test-user" class="w-full p-3 border rounded-lg" value="test_user_123">
+                </div>
+                
+                <button class="btn-primary w-full" onclick="runTest()">
+                    <i class="fas fa-play"></i> Run Test
+                </button>
+                
+                <div id="test-results" class="mt-6" style="display:none;">
+                    <h4 class="font-bold text-gray-800 mb-3">Response:</h4>
+                    <div class="test-result">
+                        <div class="mb-3">
+                            <span class="font-semibold">Intent:</span>
+                            <span id="result-intent" class="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"></span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="font-semibold">Response:</span>
+                            <p id="result-response" class="mt-2 text-gray-700"></p>
+                        </div>
+                        <div class="mb-3">
+                            <span class="font-semibold">Entities:</span>
+                            <pre id="result-entities" class="text-xs mt-2"></pre>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Session ID:</span>
+                            <code id="result-session" class="ml-2 text-xs bg-gray-200 px-2 py-1 rounded"></code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Test Examples -->
+            <div class="card p-6 mt-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Test Examples</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="setTestQuery('Find me a 3 bedroom house', 'real_estate')">
+                        <p class="font-semibold text-sm text-gray-700">🏠 Real Estate Search</p>
+                        <p class="text-xs text-gray-500 mt-1">"Find me a 3 bedroom house"</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="setTestQuery('Order pizza', 'food_delivery')">
+                        <p class="font-semibold text-sm text-gray-700">🍕 Food Delivery</p>
+                        <p class="text-xs text-gray-500 mt-1">"Order pizza"</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="setTestQuery('How do I reset my password?', 'customer_support')">
+                        <p class="font-semibold text-sm text-gray-700">💬 Customer Support</p>
+                        <p class="text-xs text-gray-500 mt-1">"How do I reset my password?"</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="setTestQuery('Schedule appointment with doctor', 'healthcare')">
+                        <p class="font-semibold text-sm text-gray-700">🏥 Healthcare</p>
+                        <p class="text-xs text-gray-500 mt-1">"Schedule appointment"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Section -->
+        <div id="analytics-section" style="display:none;">
+            <h2 class="text-3xl font-bold text-white mb-6">
+                <i class="fas fa-chart-line"></i> Analytics
+            </h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Requests by Domain</h3>
+                    <canvas id="domainChart"></canvas>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Intent Distribution</h3>
+                    <canvas id="intentChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div id="settings-section" style="display:none;">
+            <h2 class="text-3xl font-bold text-white mb-6">
+                <i class="fas fa-cog"></i> Settings
+            </h2>
+            
+            <div class="card p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Platform Configuration</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">API Base URL</label>
+                        <input type="text" id="api-url" class="w-full p-3 border rounded-lg" value="http://localhost:8000">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">API Key</label>
+                        <input type="password" id="api-key" class="w-full p-3 border rounded-lg" value="offline_demo_key">
+                    </div>
+                    
+                    <button class="btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Documentation Section -->
+        <div id="docs-section" style="display:none;">
+            <h2 class="text-3xl font-bold text-white mb-6">
+                <i class="fas fa-book"></i> Documentation
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="card p-6">
+                    <i class="fas fa-rocket text-4xl text-purple-600 mb-4"></i>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">Quick Start</h3>
+                    <p class="text-sm text-gray-600 mb-4">Get started with the platform in minutes</p>
+                    <a href="../START_HERE.md" class="text-purple-600 hover:underline text-sm">
+                        Read Guide →
+                    </a>
+                </div>
+                
+                <div class="card p-6">
+                    <i class="fas fa-layer-group text-4xl text-blue-600 mb-4"></i>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">All Domains</h3>
+                    <p class="text-sm text-gray-600 mb-4">Explore all 19 production domains</p>
+                    <a href="../ALL_DOMAINS_GUIDE.md" class="text-purple-600 hover:underline text-sm">
+                        View Domains →
+                    </a>
+                </div>
+                
+                <div class="card p-6">
+                    <i class="fas fa-code text-4xl text-green-600 mb-4"></i>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">API Reference</h3>
+                    <p class="text-sm text-gray-600 mb-4">Complete API documentation</p>
+                    <a href="../API.md" class="text-purple-600 hover:underline text-sm">
+                        API Docs →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        let config = {
+            apiUrl: 'http://localhost:8000',
+            apiKey: 'offline_demo_key'
+        };
+        
+        // Load settings from localStorage
+        function loadSettings() {
+            const saved = localStorage.getItem('vaas-config');
+            if (saved) {
+                config = JSON.parse(saved);
+                document.getElementById('api-url').value = config.apiUrl;
+                document.getElementById('api-key').value = config.apiKey;
+            }
+        }
+        
+        // Save settings
+        function saveSettings() {
+            config.apiUrl = document.getElementById('api-url').value;
+            config.apiKey = document.getElementById('api-key').value;
+            localStorage.setItem('vaas-config', JSON.stringify(config));
+            alert('Settings saved!');
+            loadPlatformStatus();
+        }
+        
+        // Navigation
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('[id$="-section"]').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(section + '-section').style.display = 'block';
+            
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Load section data
+            if (section === 'domains') loadDomains();
+            if (section === 'analytics') loadAnalytics();
+        }
+        
+        // Load platform health status
+        async function loadPlatformStatus() {
+            try {
+                const response = await fetch(`${config.apiUrl}/health`);
+                const data = await response.json();
+                
+                // Update metrics
+                document.getElementById('total-domains').textContent = data.domains_loaded || 0;
+                document.getElementById('domains-count').textContent = data.domains_loaded || 0;
+                document.getElementById('platform-mode').textContent = data.mode || 'Unknown';
+                
+                // Update health badge
+                const badge = document.getElementById('status-badge');
+                if (data.status === 'healthy') {
+                    badge.textContent = 'Healthy';
+                    badge.className = 'status-badge status-healthy';
+                } else {
+                    badge.textContent = 'Warning';
+                    badge.className = 'status-badge status-warning';
+                }
+                
+                // Show health details
+                const healthHtml = `
+                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                        <span class="text-sm font-semibold">Status</span>
+                        <span class="text-green-600">${data.status}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <span class="text-sm font-semibold">Mode</span>
+                        <span class="text-blue-600">${data.mode}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                        <span class="text-sm font-semibold">Domains Loaded</span>
+                        <span class="text-purple-600">${data.domains_loaded}</span>
+                    </div>
+                    ${data.features ? `
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-semibold block mb-2">Features</span>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>✓ Intent Recognition: ${data.features.intent_recognition}</li>
+                            <li>✓ Response Generation: ${data.features.response_generation}</li>
+                            <li>✓ Conversation Memory: ${data.features.conversation_memory}</li>
+                            <li>✓ Multi-Domain: ${data.features.multi_domain}</li>
+                        </ul>
+                    </div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('health-details').innerHTML = healthHtml;
+                
+            } catch (error) {
+                console.error('Failed to load platform status:', error);
+                document.getElementById('status-badge').textContent = 'Offline';
+                document.getElementById('status-badge').className = 'status-badge bg-red-100 text-red-800';
+            }
+        }
+        
+        // Load domains list
+        async function loadDomains() {
+            try {
+                const response = await fetch(`${config.apiUrl}/api/v1/domains`);
+                const data = await response.json();
+                
+                const domainsHtml = data.domains.map(domain => `
+                    <div class="p-4 border rounded-lg hover:bg-gray-50 transition">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-folder text-purple-600 text-2xl mr-4"></i>
+                                <div>
+                                    <h4 class="font-bold text-gray-800">${domain}</h4>
+                                    <p class="text-xs text-gray-500">Domain configuration</p>
+                                </div>
+                            </div>
+                            <button class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700" onclick="testDomain('${domain}')">
+                                <i class="fas fa-play"></i> Test
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('domains-list').innerHTML = domainsHtml;
+                
+            } catch (error) {
+                console.error('Failed to load domains:', error);
+            }
+        }
+        
+        // Run API test
+        async function runTest() {
+            const domain = document.getElementById('test-domain').value;
+            const query = document.getElementById('test-query').value;
+            const userId = document.getElementById('test-user').value;
+            
+            if (!query.trim()) {
+                alert('Please enter a query');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${config.apiUrl}/api/v1/process/text`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${config.apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: query,
+                        user_id: userId,
+                        domain: domain
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // Show results
+                document.getElementById('test-results').style.display = 'block';
+                document.getElementById('result-intent').textContent = result.intent || 'N/A';
+                document.getElementById('result-response').textContent = result.text_response || 'No response';
+                document.getElementById('result-entities').textContent = JSON.stringify(result.entities || {}, null, 2);
+                document.getElementById('result-session').textContent = result.session_id || 'N/A';
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+        
+        // Quick test
+        async function testQuickQuery() {
+            const response = await fetch(`${config.apiUrl}/api/v1/process/text`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${config.apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: 'Test query',
+                    user_id: 'quick_test',
+                    domain: 'customer_support'
+                })
+            });
+            
+            const result = await response.json();
+            alert(`Quick Test Result:\n\nIntent: ${result.intent}\nResponse: ${result.text_response}`);
+        }
+        
+        // Test specific domain
+        function testDomain(domain) {
+            showSection('test');
+            document.getElementById('test-domain').value = domain;
+            document.getElementById('test-query').value = `Test query for ${domain} domain`;
+        }
+        
+        // Set test query from example
+        function setTestQuery(query, domain) {
+            document.getElementById('test-query').value = query;
+            document.getElementById('test-domain').value = domain;
+            document.getElementById('test-results').style.display = 'none';
+        }
+        
+        // Load analytics
+        function loadAnalytics() {
+            // Sample data for demo
+            const domainData = {
+                labels: ['Real Estate', 'Food Delivery', 'Customer Support', 'Healthcare', 'E-commerce'],
+                datasets: [{
+                    data: [45, 32, 28, 15, 10],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b']
+                }]
+            };
+            
+            const intentData = {
+                labels: ['Search', 'Create', 'Schedule', 'Check Status', 'Calculate'],
+                datasets: [{
+                    data: [35, 25, 20, 12, 8],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#43e97b']
+                }]
+            };
+            
+            // Create charts
+            const domainCtx = document.getElementById('domainChart');
+            if (domainCtx) {
+                new Chart(domainCtx, {
+                    type: 'doughnut',
+                    data: domainData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+            
+            const intentCtx = document.getElementById('intentChart');
+            if (intentCtx) {
+                new Chart(intentCtx, {
+                    type: 'bar',
+                    data: intentData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Create new domain
+        function createNewDomain() {
+            alert('Domain creation wizard coming soon!\n\nFor now, use: python scripts/create_domain.py');
+        }
+        
+        // Export logs
+        function exportLogs() {
+            alert('Log export feature coming soon!');
+        }
+        
+        // Initialize dashboard
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSettings();
+            loadPlatformStatus();
+            loadDomains();
+            
+            // Refresh status every 30 seconds
+            setInterval(loadPlatformStatus, 30000);
+        });
+    </script>
+</body>
+</html>
+

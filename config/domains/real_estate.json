@@ -1,0 +1,105 @@
+{
+  "domain_name": "real_estate",
+  "description": "Real estate property search and inquiry system",
+  "system_prompt": "You are Alex, a knowledgeable real estate agent. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with properties, viewings, or real estate questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses friendly and professional, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "search_property",
+      "entities": [
+        "bedrooms",
+        "bathrooms",
+        "location",
+        "price_range",
+        "property_type"
+      ],
+      "api_endpoint": "https://api.example-realestate.com/v1/search",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "I found {count} properties matching your criteria in {location}. The average price is ${avg_price}. Would you like to see detailed listings?",
+      "requires_auth": false
+    },
+    {
+      "name": "get_property_details",
+      "entities": [
+        "property_id"
+      ],
+      "api_endpoint": "https://api.example-realestate.com/v1/properties/{property_id}",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "This {property_type} at {address} has {bedrooms} bedrooms, {bathrooms} bathrooms, and is priced at ${price}. It features {amenities}. Would you like to schedule a viewing?",
+      "requires_auth": false
+    },
+    {
+      "name": "schedule_viewing",
+      "entities": [
+        "property_id",
+        "date",
+        "time",
+        "contact_name",
+        "contact_phone"
+      ],
+      "api_endpoint": "https://api.example-realestate.com/v1/viewings",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Your viewing for {address} has been scheduled for {date} at {time}. A confirmation has been sent to {contact_phone}. Our agent will contact you shortly.",
+      "requires_auth": true
+    },
+    {
+      "name": "get_neighborhood_info",
+      "entities": [
+        "location"
+      ],
+      "api_endpoint": "https://api.example-realestate.com/v1/neighborhoods",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "{location} has a walkability score of {walk_score}, with {school_count} schools nearby. The median home price is ${median_price}. Crime rate is {crime_rate}.",
+      "requires_auth": false
+    },
+    {
+      "name": "calculate_mortgage",
+      "entities": [
+        "price",
+        "down_payment",
+        "interest_rate",
+        "loan_term"
+      ],
+      "api_endpoint": "https://api.example-realestate.com/v1/mortgage-calculator",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "For a ${price} property with {down_payment}% down at {interest_rate}% interest over {loan_term} years, your monthly payment would be approximately ${monthly_payment}.",
+      "requires_auth": false
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "real_estate_knowledge",
+    "top_k": 5,
+    "score_threshold": 0.6
+  },
+  "response_templates": {
+    "search_property": "Let me search for properties that match what you're looking for!",
+    "get_property_details": "Here's what I found about that property.",
+    "schedule_viewing": "Perfect! I've scheduled your viewing.",
+    "get_neighborhood_info": "Let me tell you about that neighborhood.",
+    "calculate_mortgage": "Let me calculate that for you.",
+    "greeting": "Hi! I'm Alex, your knowledgeable real estate agent. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with properties, viewings, or real estate questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-01",
+    "contact": "support@realestate.example.com"
+  }
+}

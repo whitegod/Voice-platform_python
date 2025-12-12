@@ -1,0 +1,182 @@
+{
+  "domain_name": "banking",
+  "description": "Digital banking assistant for account management, transactions, and financial services",
+  "system_prompt": "You are Morgan, a professional banking assistant. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with transfers, account info, or financial questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses trustworthy and clear, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "check_balance",
+      "entities": [
+        "account_type"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/accounts/balance",
+      "api_method": "GET",
+      "response_template": "Your {account_type} balance: ${available_balance} available, ${current_balance} current. Pending transactions: ${pending_amount}. Last transaction: {last_transaction}",
+      "requires_auth": true
+    },
+    {
+      "name": "transfer_money",
+      "entities": [
+        "from_account",
+        "to_account",
+        "amount",
+        "recipient_name"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/transfers",
+      "api_method": "POST",
+      "response_template": "Transfer of ${amount} from {from_account} to {to_account} ({recipient_name}) completed. Transaction ID: {transaction_id}. New balance: ${new_balance}. Confirmation sent to your email.",
+      "requires_auth": true
+    },
+    {
+      "name": "pay_bill",
+      "entities": [
+        "biller_name",
+        "amount",
+        "payment_date",
+        "account_number"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/bill-payments",
+      "api_method": "POST",
+      "response_template": "Bill payment scheduled: ${amount} to {biller_name} on {payment_date}. Payment ID: {payment_id}. Confirmation #: {confirmation_number}. Payment will be debited from account ending in {account_last_four}.",
+      "requires_auth": true
+    },
+    {
+      "name": "view_transactions",
+      "entities": [
+        "account_type",
+        "date_range",
+        "transaction_type"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/transactions",
+      "api_method": "GET",
+      "response_template": "{account_type} transactions for {date_range}: {transaction_count} transactions totaling ${total_amount}. Recent: {recent_transactions}. Download statement: {statement_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "apply_for_loan",
+      "entities": [
+        "loan_type",
+        "amount",
+        "purpose",
+        "term"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/loans/applications",
+      "api_method": "POST",
+      "response_template": "Loan application submitted: {loan_type} for ${amount}. Purpose: {purpose}. Term: {term} months. Application ID: {application_id}. Estimated rate: {estimated_rate}%. Decision typically within 24-48 hours. We'll contact you at {contact_info}.",
+      "requires_auth": true
+    },
+    {
+      "name": "open_account",
+      "entities": [
+        "account_type",
+        "initial_deposit"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/accounts/open",
+      "api_method": "POST",
+      "response_template": "{account_type} account opened successfully! Account #: {account_number}. Initial deposit: ${initial_deposit}. Features: {features}. Debit card will arrive in 7-10 business days. Online banking active immediately.",
+      "requires_auth": true
+    },
+    {
+      "name": "report_lost_card",
+      "entities": [
+        "card_type",
+        "last_four_digits"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/cards/report-lost",
+      "api_method": "POST",
+      "response_template": "Your {card_type} ending in {last_four_digits} has been blocked immediately. Report ID: {report_id}. Replacement card ordered - arrives in 5-7 business days. No fraudulent charges detected. Temporary card available at any branch.",
+      "requires_auth": true
+    },
+    {
+      "name": "dispute_transaction",
+      "entities": [
+        "transaction_id",
+        "amount",
+        "reason"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/disputes",
+      "api_method": "POST",
+      "response_template": "Dispute filed for transaction {transaction_id} (${amount}). Reason: {reason}. Dispute ID: {dispute_id}. Provisional credit of ${amount} will be applied within 1-2 business days pending investigation. Case decision within 10 business days.",
+      "requires_auth": true
+    },
+    {
+      "name": "set_up_direct_deposit",
+      "entities": [
+        "employer_name",
+        "amount_type"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/direct-deposit/setup",
+      "api_method": "POST",
+      "response_template": "Direct deposit set up for {employer_name}. Routing #: {routing_number}. Account #: {account_number}. Form sent to {email}. Deposits typically start within 1-2 pay cycles. {amount_type} deposit configured.",
+      "requires_auth": true
+    },
+    {
+      "name": "get_credit_score",
+      "entities": [],
+      "api_endpoint": "https://api.bank.example.com/v1/credit-score",
+      "api_method": "GET",
+      "response_template": "Your credit score: {score} ({rating}). Change from last month: {change}. Factors affecting score: {factors}. Recommendations: {recommendations}. Updated: {last_updated}",
+      "requires_auth": true
+    },
+    {
+      "name": "investment_information",
+      "entities": [
+        "investment_type",
+        "amount"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/investments/info",
+      "api_method": "GET",
+      "response_template": "{investment_type} investment information: Current rate: {rate}%. Minimum: ${minimum}. For ${amount}: Estimated returns: ${estimated_returns} over {term}. Risk level: {risk_level}. Speak with advisor: {advisor_contact}",
+      "requires_auth": false
+    },
+    {
+      "name": "atm_locator",
+      "entities": [
+        "location",
+        "zip_code"
+      ],
+      "api_endpoint": "https://api.bank.example.com/v1/locations/atms",
+      "api_method": "GET",
+      "response_template": "Nearest ATMs to {location}: {atm_list}. All ATMs are fee-free for our customers. Branch locations: {branch_list}. Extended hours available at {extended_locations}",
+      "requires_auth": false
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "banking_knowledge",
+    "top_k": 5,
+    "score_threshold": 0.75
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Morgan, your professional banking assistant. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "security_reminder": "🔒 For your security, never share your PIN, password, or full account number.",
+    "fraud_alert": "⚠️ Suspicious activity? Contact us immediately at 1-800-BANK-HELP.",
+    "mobile_app": "💡 Tip: Download our mobile app for instant access to all banking features!"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with transfers, account info, or financial questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-15",
+    "contact": "support@bank.example.com",
+    "customer_service": "1-800-BANK-HELP",
+    "fraud_hotline": "1-800-FRAUD-24",
+    "fdic_insured": true,
+    "routing_number": "123456789",
+    "security_features": [
+      "2FA",
+      "biometric",
+      "encryption",
+      "fraud_monitoring"
+    ],
+    "services": [
+      "checking",
+      "savings",
+      "credit_cards",
+      "loans",
+      "mortgages",
+      "investments",
+      "insurance"
+    ]
+  }
+}

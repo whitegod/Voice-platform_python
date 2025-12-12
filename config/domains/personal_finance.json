@@ -1,0 +1,114 @@
+{
+  "domain_name": "personal_finance",
+  "description": "Personal finance assistant for budgeting, expense tracking, and financial planning",
+  "system_prompt": "You are Alex, a smart financial advisor. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with budgeting, saving, or financial planning, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses clear and practical, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "track_expense",
+      "entities": [
+        "amount",
+        "category",
+        "description",
+        "payment_method"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/expenses",
+      "api_method": "POST",
+      "response_template": "Expense logged: ${amount} for {category} ({description}). Payment: {payment_method}. This month: ${monthly_total} in {category}. Budget: ${category_budget} ({percentage_used}% used). Remaining: ${remaining}",
+      "requires_auth": true
+    },
+    {
+      "name": "create_budget",
+      "entities": [
+        "monthly_income",
+        "budget_categories"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/budgets",
+      "api_method": "POST",
+      "response_template": "Budget created! Monthly income: ${monthly_income}. Allocations: {budget_breakdown}. Savings goal: ${savings_goal} ({savings_percentage}%). Discretionary: ${discretionary}. Budget ID: {budget_id}. Start tracking today!",
+      "requires_auth": true
+    },
+    {
+      "name": "view_budget_status",
+      "entities": [
+        "time_period"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/budgets/status",
+      "api_method": "GET",
+      "response_template": "Budget for {time_period}: Income: ${income}. Expenses: ${expenses}. Savings: ${savings}. Balance: ${balance}. Categories: {category_status}. Alerts: {overspending_alerts}. Tips: {optimization_tips}",
+      "requires_auth": true
+    },
+    {
+      "name": "set_savings_goal",
+      "entities": [
+        "goal_name",
+        "target_amount",
+        "deadline",
+        "category"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/goals",
+      "api_method": "POST",
+      "response_template": "Savings goal set! {goal_name}: ${target_amount} by {deadline}. Category: {category}. Monthly target: ${monthly_target}. Current savings: ${current_amount}. Progress: {progress_percentage}%. You can do this! 💰",
+      "requires_auth": true
+    },
+    {
+      "name": "analyze_spending",
+      "entities": [
+        "time_period",
+        "category"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/analytics",
+      "api_method": "GET",
+      "response_template": "Spending analysis for {time_period}: Total: ${total_spent}. Top categories: {top_categories}. Average daily: ${daily_average}. Trends: {trends}. Compared to last period: {comparison}. Recommendations: {recommendations}",
+      "requires_auth": true
+    },
+    {
+      "name": "recurring_transactions",
+      "entities": [
+        "transaction_type"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/recurring",
+      "api_method": "GET",
+      "response_template": "Your recurring {transaction_type}: {transaction_list}. Monthly total: ${monthly_total}. Annual: ${annual_total}. Next charges: {upcoming_charges}. Manage subscriptions: {manage_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "debt_payoff_plan",
+      "entities": [
+        "total_debt",
+        "monthly_payment"
+      ],
+      "api_endpoint": "https://api.financeapp.example.com/v1/debt/plan",
+      "api_method": "POST",
+      "response_template": "Debt payoff plan created! Total debt: ${total_debt}. Monthly payment: ${monthly_payment}. Payoff date: {payoff_date} ({months_remaining} months). Interest saved: ${interest_saved}. Strategy: {payoff_strategy}. Stay focused! 💪",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "financial_education",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Alex, your smart financial advisor. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "achievement": "🎉 Milestone reached! You're {percentage}% toward your goal!",
+    "tip": "💡 Money tip: {tip}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with budgeting, saving, or financial planning?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "support_email": "support@financeapp.example.com",
+    "categories": [
+      "housing",
+      "transportation",
+      "food",
+      "utilities",
+      "entertainment",
+      "healthcare",
+      "savings"
+    ],
+    "disclaimer": "This is educational information only. Consult a financial advisor for personalized advice."
+  }
+}

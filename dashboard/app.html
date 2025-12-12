@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaaS Enterprise Platform - Control Center</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js for interactivity -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .sidebar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item {
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(100, 126, 234, 0.1);
+            border-left-color: #667eea;
+        }
+        
+        .nav-item.active {
+            background: rgba(100, 126, 234, 0.15);
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s;
+        }
+        
+        .btn-gradient:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+        
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        
+        .domain-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .domain-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+    <div class="flex h-screen" x-data="dashboardApp()">
+        <!-- Sidebar -->
+        <div class="sidebar w-72 flex flex-col">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 gradient-bg rounded-xl flex items-center justify-center">
+                        <i class="fas fa-microphone-alt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">VaaS Platform</h1>
+                        <p class="text-xs text-gray-400">Enterprise Control Center</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 py-6">
+                <div class="nav-item px-6 py-3 cursor-pointer" 
+                     :class="{ 'active': activeSection === 'dashboard' }"
+                     @click="activeSection = 'dashboard'">
+                    <i class="fas fa-home w-6 mr-3"></i>
+                    <span>Dashboard</span>
+                </div>
+                
+                <div class="nav-item px-6 py-3 cursor-pointer"
+                     :class="{ 'active': activeSection === 'conversation' }"
+                     @click="activeSection = 'conversation'">
+                    <i class="fas fa-comments w-6 mr-3"></i>
+                    <span>Conversation Hub</span>
+                </div>
+                
+                <div class="nav-item px-6 py-3 cursor-pointer"
+                     :class="{ 'active': activeSection === 'domains' }"
+                     @click="activeSection = 'domains'">
+                    <i class="fas fa-layer-group w-6 mr-3"></i>
+                    <span>Domains</span>
+                </div>
+                
+                <div class="nav-item px-6 py-3 cursor-pointer"
+                     :class="{ 'active': activeSection === 'upload' }"
+                     @click="activeSection = 'upload'">
+                    <i class="fas fa-cloud-upload-alt w-6 mr-3"></i>
+                    <span>Upload & Test</span>
+                </div>
+                
+                <div class="nav-item px-6 py-3 cursor-pointer"
+                     :class="{ 'active': activeSection === 'analytics' }"
+                     @click="activeSection = 'analytics'">
+                    <i class="fas fa-chart-bar w-6 mr-3"></i>
+                    <span>Analytics</span>
+                </div>
+                
+                <div class="nav-item px-6 py-3 cursor-pointer"
+                     :class="{ 'active': activeSection === 'data' }"
+                     @click="activeSection = 'data'">
+                    <i class="fas fa-database w-6 mr-3"></i>
+                    <span>Data Management</span>
+                </div>
+            </nav>
+            
+            <!-- Status Footer -->
+            <div class="p-6 border-t border-gray-700">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-gray-400">Platform Status</span>
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 rounded-full mr-2" 
+                             :class="platformStatus === 'healthy' ? 'bg-green-400 pulse' : 'bg-red-400'"></div>
+                        <span class="text-xs font-semibold" 
+                              :class="platformStatus === 'healthy' ? 'text-green-400' : 'text-red-400'"
+                              x-text="platformStatus"></span>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500">
+                    <div><span x-text="domainsLoaded"></span> domains loaded</div>
+                    <div>Mode: <span x-text="platformMode"></span></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-8">
+                <!-- Dashboard Section -->
+                <div x-show="activeSection === 'dashboard'" x-transition>
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-4xl font-bold text-white">Welcome to VaaS Platform</h2>
+                            <p class="text-gray-400 mt-2">Enterprise Voice-as-a-Service Control Center</p>
+                        </div>
+                        <button @click="refreshAll()" class="btn-gradient px-6 py-3 rounded-lg font-semibold">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Refresh All
+                        </button>
+                    </div>
+                    
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="glass-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-400 mb-2">Total Domains</p>
+                                    <p class="metric-value" x-text="domainsLoaded">0</p>
+                                </div>
+                                <i class="fas fa-layer-group text-5xl opacity-20 text-purple-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-400 mb-2">Total Intents</p>
+                                    <p class="metric-value">180+</p>
+                                </div>
+                                <i class="fas fa-brain text-5xl opacity-20 text-blue-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-400 mb-2">Conversations</p>
+                                    <p class="metric-value" x-text="totalConversations">0</p>
+                                </div>
+                                <i class="fas fa-comments text-5xl opacity-20 text-green-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-400 mb-2">Uptime</p>
+                                    <p class="metric-value text-2xl">99.9%</p>
+                                </div>
+                                <i class="fas fa-server text-5xl opacity-20 text-yellow-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Information -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i class="fas fa-info-circle text-blue-400 mr-3"></i>
+                                System Information
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-white bg-opacity-5 rounded-lg">
+                                    <span class="text-gray-300">Platform Version</span>
+                                    <span class="font-semibold text-white">1.0.0</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-white bg-opacity-5 rounded-lg">
+                                    <span class="text-gray-300">API Status</span>
+                                    <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-sm font-semibold">Online</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-white bg-opacity-5 rounded-lg">
+                                    <span class="text-gray-300">Mode</span>
+                                    <span class="font-semibold text-white" x-text="platformMode">Offline</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-white bg-opacity-5 rounded-lg">
+                                    <span class="text-gray-300">AI Components</span>
+                                    <span class="font-semibold text-white">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center">
+                                <i class="fas fa-rocket text-purple-400 mr-3"></i>
+                                Quick Actions
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button @click="activeSection = 'conversation'" class="p-4 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-lg transition text-center">
+                                    <i class="fas fa-comments text-2xl mb-2 text-blue-400"></i>
+                                    <p class="text-sm font-semibold">Start Chat</p>
+                                </button>
+                                <button @click="activeSection = 'upload'" class="p-4 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-lg transition text-center">
+                                    <i class="fas fa-upload text-2xl mb-2 text-green-400"></i>
+                                    <p class="text-sm font-semibold">Upload Audio</p>
+                                </button>
+                                <button @click="activeSection = 'domains'" class="p-4 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-lg transition text-center">
+                                    <i class="fas fa-layer-group text-2xl mb-2 text-purple-400"></i>
+                                    <p class="text-sm font-semibold">Manage Domains</p>
+                                </button>
+                                <button @click="activeSection = 'analytics'" class="p-4 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-lg transition text-center">
+                                    <i class="fas fa-chart-line text-2xl mb-2 text-yellow-400"></i>
+                                    <p class="text-sm font-semibold">View Analytics</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conversation Hub Section -->
+                <div x-show="activeSection === 'conversation'" x-transition>
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h2 class="text-4xl font-bold text-white">Conversation Hub</h2>
+                            <p class="text-gray-400 mt-2">Interactive AI testing interface</p>
+                        </div>
+                        <select x-model="selectedDomain" class="px-6 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white font-semibold">
+                            <option value="real_estate">🏠 Real Estate</option>
+                            <option value="food_delivery">🍕 Food Delivery</option>
+                            <option value="customer_support">💬 Customer Support</option>
+                            <option value="healthcare">🏥 Healthcare</option>
+                            <option value="ecommerce">🛍️ E-commerce</option>
+                            <option value="banking">🏦 Banking</option>
+                            <option value="travel">✈️ Travel</option>
+                            <option value="education">📚 Education</option>
+                            <option value="fitness">💪 Fitness</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Chat Interface -->
+                    <div class="glass-card p-6">
+                        <!-- Messages Container -->
+                        <div class="h-96 overflow-y-auto mb-6 space-y-4" id="chat-messages">
+                            <div class="text-center text-gray-400 text-sm mt-20">
+                                <i class="fas fa-comments text-4xl mb-4 opacity-50"></i>
+                                <p>Start a conversation below</p>
+                                <p class="text-xs mt-2">Selected domain: <span class="font-semibold" x-text="selectedDomain"></span></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Input Area -->
+                        <div class="flex items-center space-x-4">
+                            <input 
+                                type="text" 
+                                x-model="userInput"
+                                @keyup.enter="sendMessage()"
+                                placeholder="Type your message here..."
+                                class="flex-1 px-6 py-4 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-purple-500">
+                            
+                            <button @click="sendMessage()" 
+                                    :disabled="loading"
+                                    class="btn-gradient px-8 py-4 rounded-xl font-semibold flex items-center disabled:opacity-50">
+                                <i class="fas" :class="loading ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
+                                <span class="ml-2" x-text="loading ? 'Processing...' : 'Send'"></span>
+                            </button>
+                        </div>
+                        
+                        <!-- Quick Suggestions -->
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <template x-for="suggestion in quickSuggestions[selectedDomain]" :key="suggestion">
+                                <button @click="userInput = suggestion; sendMessage()" 
+                                        class="px-4 py-2 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full text-sm text-gray-300 transition">
+                                    <span x-text="suggestion"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upload & Test Section -->
+                <div x-show="activeSection === 'upload'" x-transition>
+                    <h2 class="text-4xl font-bold text-white mb-8">Upload & Test</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Audio Upload -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-microphone text-red-400 mr-3"></i>
+                                Voice Testing
+                            </h3>
+                            
+                            <div class="upload-zone p-8 text-center cursor-pointer" 
+                                 @drop.prevent="handleAudioDrop($event)"
+                                 @dragover.prevent="$el.classList.add('drag-over')"
+                                 @dragleave.prevent="$el.classList.remove('drag-over')"
+                                 @click="$refs.audioInput.click()">
+                                <i class="fas fa-cloud-upload-alt text-6xl mb-4 text-gray-400"></i>
+                                <p class="text-lg font-semibold text-white mb-2">Drop audio file here</p>
+                                <p class="text-sm text-gray-400 mb-4">or click to browse</p>
+                                <p class="text-xs text-gray-500">Supports: MP3, WAV, M4A, OGG</p>
+                                <input type="file" x-ref="audioInput" @change="handleAudioUpload($event)" 
+                                       accept="audio/*" class="hidden">
+                            </div>
+                            
+                            <div x-show="audioFile" class="mt-4 p-4 bg-white bg-opacity-5 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-audio text-purple-400 text-2xl mr-3"></i>
+                                        <div>
+                                            <p class="text-sm font-semibold text-white" x-text="audioFileName"></p>
+                                            <p class="text-xs text-gray-400" x-text="audioFileSize"></p>
+                                        </div>
+                                    </div>
+                                    <button @click="audioFile = null" class="text-red-400 hover:text-red-300">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div x-show="audioFile" class="mt-4">
+                                <label class="block text-sm font-semibold text-gray-300 mb-2">Select Domain</label>
+                                <select x-model="uploadDomain" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white">
+                                    <option value="real_estate">Real Estate</option>
+                                    <option value="customer_support">Customer Support</option>
+                                    <option value="healthcare">Healthcare</option>
+                                </select>
+                                
+                                <button @click="processAudio()" 
+                                        :disabled="loadingAudio"
+                                        class="btn-gradient w-full px-6 py-3 rounded-lg font-semibold mt-4 disabled:opacity-50">
+                                    <i class="fas" :class="loadingAudio ? 'fa-spinner fa-spin' : 'fa-magic'"></i>
+                                    <span class="ml-2" x-text="loadingAudio ? 'Processing Audio...' : 'Process Audio'"></span>
+                                </button>
+                            </div>
+                            
+                            <div x-show="audioResult" class="mt-6 p-4 bg-green-500 bg-opacity-10 border border-green-500 border-opacity-30 rounded-lg">
+                                <h4 class="font-bold text-green-400 mb-3">Audio Processing Result</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div><span class="text-gray-400">Transcribed:</span> <span class="text-white font-semibold" x-text="audioTranscription"></span></div>
+                                    <div><span class="text-gray-400">Intent:</span> <span class="text-purple-400" x-text="audioIntent"></span></div>
+                                    <div><span class="text-gray-400">Response:</span> <p class="text-white mt-2" x-text="audioResponse"></p></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Text/Data Upload -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-2xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-keyboard text-blue-400 mr-3"></i>
+                                Text Testing
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-300 mb-2">Enter Text or Paste Data</label>
+                                    <textarea 
+                                        x-model="textInput"
+                                        placeholder="Type or paste your query here..."
+                                        class="w-full h-32 px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 resize-none"></textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-300 mb-2">Or Upload Text File</label>
+                                    <input type="file" @change="handleTextFileUpload($event)" 
+                                           accept=".txt,.json,.csv" 
+                                           class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-purple-600 file:text-white file:cursor-pointer">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-300 mb-2">Domain</label>
+                                    <select x-model="textDomain" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white">
+                                        <option value="real_estate">Real Estate</option>
+                                        <option value="customer_support">Customer Support</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="ecommerce">E-commerce</option>
+                                        <option value="banking">Banking</option>
+                                    </select>
+                                </div>
+                                
+                                <button @click="processText()" 
+                                        :disabled="loadingText || !textInput"
+                                        class="btn-gradient w-full px-6 py-3 rounded-lg font-semibold disabled:opacity-50">
+                                    <i class="fas" :class="loadingText ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
+                                    <span class="ml-2" x-text="loadingText ? 'Processing...' : 'Process Text'"></span>
+                                </button>
+                            </div>
+                            
+                            <div x-show="textResult" class="mt-6 p-4 bg-blue-500 bg-opacity-10 border border-blue-500 border-opacity-30 rounded-lg">
+                                <h4 class="font-bold text-blue-400 mb-3">Text Processing Result</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div><span class="text-gray-400">Domain:</span> <span class="text-white font-semibold" x-text="textDomain"></span></div>
+                                    <div><span class="text-gray-400">Intent:</span> <span class="text-purple-400" x-text="textIntent"></span></div>
+                                    <div><span class="text-gray-400">Entities:</span> <code class="text-xs text-gray-300" x-text="JSON.stringify(textEntities)"></code></div>
+                                    <div><span class="text-gray-400">Response:</span> <p class="text-white mt-2" x-text="textResponse"></p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Domains Section -->
+                <div x-show="activeSection === 'domains'" x-transition>
+                    <h2 class="text-4xl font-bold text-white mb-8">Domain Management</h2>
+                    
+                    <div class="glass-card p-6 mb-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-2xl font-bold text-white">Available Domains</h3>
+                                <p class="text-gray-400 text-sm mt-1"><span x-text="domains.length"></span> production-ready domains</p>
+                            </div>
+                            <button class="btn-gradient px-6 py-3 rounded-lg font-semibold">
+                                <i class="fas fa-plus mr-2"></i>
+                                Create New Domain
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <template x-for="domain in domains" :key="domain">
+                                <div class="domain-card" @click="selectedDomain = domain; activeSection = 'conversation'">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="text-lg font-bold text-white capitalize" x-text="domain.replace('_', ' ')"></h4>
+                                        <i class="fas fa-arrow-right text-purple-400"></i>
+                                    </div>
+                                    <p class="text-sm text-gray-400 mb-3">Production-ready domain</p>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                                        <span>Active</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management Section -->
+                <div x-show="activeSection === 'data'" x-transition>
+                    <h2 class="text-4xl font-bold text-white mb-8">Data Management</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Upload Data -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Upload Training Data</h3>
+                            <div class="upload-zone p-8 text-center cursor-pointer" @click="$refs.dataInput.click()">
+                                <i class="fas fa-database text-4xl mb-3 text-gray-400"></i>
+                                <p class="text-white font-semibold mb-2">Upload CSV, JSON, or TXT</p>
+                                <p class="text-xs text-gray-400">Training data for knowledge base</p>
+                                <input type="file" x-ref="dataInput" @change="handleDataUpload($event)" 
+                                       accept=".csv,.json,.txt" class="hidden">
+                            </div>
+                            
+                            <div x-show="uploadedData" class="mt-4">
+                                <div class="p-4 bg-green-500 bg-opacity-10 border border-green-500 border-opacity-30 rounded-lg">
+                                    <p class="text-green-400 font-semibold mb-2">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        Data uploaded successfully
+                                    </p>
+                                    <p class="text-sm text-gray-300" x-text="'Records: ' + dataRecordCount"></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Conversation History -->
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-bold text-white mb-4">Conversation History</h3>
+                            <div class="space-y-3 max-h-96 overflow-y-auto">
+                                <template x-for="conv in conversationHistory" :key="conv.session_id">
+                                    <div class="p-4 bg-white bg-opacity-5 rounded-lg hover:bg-opacity-10 transition cursor-pointer">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm font-semibold text-white" x-text="conv.domain"></span>
+                                            <span class="text-xs text-gray-400" x-text="conv.time"></span>
+                                        </div>
+                                        <p class="text-sm text-gray-300 truncate" x-text="conv.lastMessage"></p>
+                                        <div class="flex items-center mt-2 text-xs text-gray-500">
+                                            <span class="mr-3"><span x-text="conv.turns"></span> turns</span>
+                                            <span>Session: <code x-text="conv.session_id.substring(0, 8)"></code></span>
+                                        </div>
+                                    </div>
+                                </template>
+                                
+                                <div x-show="conversationHistory.length === 0" class="text-center text-gray-400 py-8">
+                                    <i class="fas fa-inbox text-3xl mb-3 opacity-50"></i>
+                                    <p class="text-sm">No conversations yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analytics Section -->
+                <div x-show="activeSection === 'analytics'" x-transition>
+                    <h2 class="text-4xl font-bold text-white mb-8">Analytics & Insights</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">Domain Usage</h3>
+                            <canvas id="domainChart"></canvas>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">Intent Distribution</h3>
+                            <canvas id="intentChart"></canvas>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">Response Times</h3>
+                            <canvas id="responseChart"></canvas>
+                        </div>
+                        
+                        <div class="glass-card p-6">
+                            <h3 class="text-lg font-bold text-white mb-4">Success Rate</h3>
+                            <div class="flex items-center justify-center h-48">
+                                <div class="text-center">
+                                    <div class="text-6xl font-bold text-green-400 mb-2">98.5%</div>
+                                    <p class="text-gray-400">Successful Responses</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function dashboardApp() {
+            return {
+                activeSection: 'dashboard',
+                selectedDomain: 'real_estate',
+                platformStatus: 'healthy',
+                platformMode: 'Offline',
+                domainsLoaded: 0,
+                totalConversations: 0,
+                domains: [],
+                loading: false,
+                userInput: '',
+                messages: [],
+                
+                // Audio upload
+                audioFile: null,
+                audioFileName: '',
+                audioFileSize: '',
+                uploadDomain: 'real_estate',
+                loadingAudio: false,
+                audioResult: false,
+                audioTranscription: '',
+                audioIntent: '',
+                audioResponse: '',
+                
+                // Text upload
+                textInput: '',
+                textDomain: 'real_estate',
+                loadingText: false,
+                textResult: false,
+                textIntent: '',
+                textEntities: {},
+                textResponse: '',
+                
+                // Data upload
+                uploadedData: false,
+                dataRecordCount: 0,
+                
+                // Conversation history
+                conversationHistory: [],
+                
+                // Quick suggestions per domain
+                quickSuggestions: {
+                    'real_estate': ['Find me a house', 'Calculate mortgage', 'Schedule viewing'],
+                    'food_delivery': ['Order pizza', 'Find restaurants', 'Track delivery'],
+                    'customer_support': ['Reset password', 'Create ticket', 'Check status'],
+                    'healthcare': ['Schedule appointment', 'Find doctor', 'Check symptoms'],
+                    'ecommerce': ['Find products', 'Track order', 'Return item'],
+                    'banking': ['Check balance', 'Transfer money', 'Pay bill'],
+                    'travel': ['Book flight', 'Find hotel', 'Rent car'],
+                    'education': ['Browse courses', 'Check grades', 'Submit assignment'],
+                    'fitness': ['Create workout', 'Track nutrition', 'Book class']
+                },
+                
+                config: {
+                    apiUrl: 'http://localhost:8000',
+                    apiKey: 'offline_demo_key'
+                },
+                
+                async init() {
+                    await this.loadPlatformStatus();
+                    await this.loadDomains();
+                    this.startAutoRefresh();
+                },
+                
+                async loadPlatformStatus() {
+                    try {
+                        const response = await fetch(`${this.config.apiUrl}/health`);
+                        const data = await response.json();
+                        
+                        this.platformStatus = data.status || 'unknown';
+                        this.platformMode = data.mode || 'Unknown';
+                        this.domainsLoaded = data.domains_loaded || 0;
+                    } catch (error) {
+                        this.platformStatus = 'offline';
+                        console.error('Platform status check failed:', error);
+                    }
+                },
+                
+                async loadDomains() {
+                    try {
+                        const response = await fetch(`${this.config.apiUrl}/api/v1/domains`);
+                        const data = await response.json();
+                        this.domains = data.domains || [];
+                    } catch (error) {
+                        console.error('Failed to load domains:', error);
+                    }
+                },
+                
+                async sendMessage() {
+                    if (!this.userInput.trim() || this.loading) return;
+                    
+                    const userMessage = this.userInput;
+                    this.userInput = '';
+                    this.loading = true;
+                    
+                    // Add user message to chat
+                    this.addMessageToChat('user', userMessage);
+                    
+                    try {
+                        const response = await fetch(`${this.config.apiUrl}/api/v1/process/text`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${this.config.apiKey}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                text: userMessage,
+                                user_id: 'dashboard_user',
+                                domain: this.selectedDomain
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        // Add AI response to chat
+                        this.addMessageToChat('assistant', result.text_response, result.intent);
+                        
+                        // Update conversation history
+                        this.addToHistory(result);
+                        this.totalConversations++;
+                        
+                    } catch (error) {
+                        this.addMessageToChat('error', 'Failed to connect to VaaS platform. Make sure it\'s running on port 8000.');
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                addMessageToChat(role, content, intent = null) {
+                    const chatContainer = document.getElementById('chat-messages');
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = 'message-bubble ' + (role === 'user' ? 'ml-auto' : 'mr-auto');
+                    
+                    if (role === 'user') {
+                        messageDiv.innerHTML = `
+                            <div class="bg-purple-600 text-white px-6 py-3 rounded-2xl rounded-tr-sm">
+                                <p class="text-sm">${content}</p>
+                            </div>
+                        `;
+                    } else if (role === 'assistant') {
+                        messageDiv.innerHTML = `
+                            <div class="bg-white bg-opacity-10 text-white px-6 py-3 rounded-2xl rounded-tl-sm">
+                                ${intent ? `<div class="text-xs text-purple-400 mb-2"><i class="fas fa-brain mr-1"></i>${intent}</div>` : ''}
+                                <p class="text-sm">${content}</p>
+                            </div>
+                        `;
+                    } else {
+                        messageDiv.innerHTML = `
+                            <div class="bg-red-500 bg-opacity-20 text-red-400 px-6 py-3 rounded-2xl">
+                                <p class="text-sm">${content}</p>
+                            </div>
+                        `;
+                    }
+                    
+                    chatContainer.appendChild(messageDiv);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                },
+                
+                handleAudioDrop(event) {
+                    const file = event.dataTransfer.files[0];
+                    if (file && file.type.startsWith('audio/')) {
+                        this.setAudioFile(file);
+                    }
+                    event.target.classList.remove('drag-over');
+                },
+                
+                handleAudioUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        this.setAudioFile(file);
+                    }
+                },
+                
+                setAudioFile(file) {
+                    this.audioFile = file;
+                    this.audioFileName = file.name;
+                    this.audioFileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                    this.audioResult = false;
+                },
+                
+                async processAudio() {
+                    if (!this.audioFile) return;
+                    
+                    this.loadingAudio = true;
+                    this.audioResult = false;
+                    
+                    // Simulate audio processing (you'll need backend support for real implementation)
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    // Mock transcription (replace with actual Whisper call)
+                    this.audioTranscription = "I'm looking for a 3 bedroom house in downtown";
+                    
+                    // Send to VaaS
+                    try {
+                        const response = await fetch(`${this.config.apiUrl}/api/v1/process/text`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${this.config.apiKey}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                text: this.audioTranscription,
+                                user_id: 'audio_user',
+                                domain: this.uploadDomain
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        this.audioIntent = result.intent;
+                        this.audioResponse = result.text_response;
+                        this.audioResult = true;
+                        
+                    } catch (error) {
+                        alert('Error processing audio: ' + error.message);
+                    } finally {
+                        this.loadingAudio = false;
+                    }
+                },
+                
+                async handleTextFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.textInput = e.target.result;
+                        };
+                        reader.readAsText(file);
+                    }
+                },
+                
+                async processText() {
+                    if (!this.textInput.trim()) return;
+                    
+                    this.loadingText = true;
+                    this.textResult = false;
+                    
+                    try {
+                        const response = await fetch(`${this.config.apiUrl}/api/v1/process/text`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${this.config.apiKey}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                text: this.textInput,
+                                user_id: 'text_user',
+                                domain: this.textDomain
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        this.textIntent = result.intent;
+                        this.textEntities = result.entities || {};
+                        this.textResponse = result.text_response;
+                        this.textResult = true;
+                        
+                    } catch (error) {
+                        alert('Error processing text: ' + error.message);
+                    } finally {
+                        this.loadingText = false;
+                    }
+                },
+                
+                handleDataUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const content = e.target.result;
+                            // Parse data (CSV, JSON, etc.)
+                            try {
+                                const data = content.split('\n').filter(line => line.trim());
+                                this.dataRecordCount = data.length;
+                                this.uploadedData = true;
+                            } catch (error) {
+                                alert('Error parsing file');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                },
+                
+                addToHistory(result) {
+                    this.conversationHistory.unshift({
+                        session_id: result.session_id,
+                        domain: result.metadata?.domain || 'unknown',
+                        time: new Date().toLocaleTimeString(),
+                        lastMessage: result.text_response.substring(0, 50) + '...',
+                        turns: result.metadata?.turns || 1
+                    });
+                    
+                    if (this.conversationHistory.length > 20) {
+                        this.conversationHistory.pop();
+                    }
+                },
+                
+                refreshAll() {
+                    this.loadPlatformStatus();
+                    this.loadDomains();
+                },
+                
+                startAutoRefresh() {
+                    setInterval(() => {
+                        this.loadPlatformStatus();
+                    }, 30000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

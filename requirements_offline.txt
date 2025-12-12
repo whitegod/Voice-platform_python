@@ -1,0 +1,11 @@
+# Offline Mode Dependencies - NO API KEYS NEEDED!
+# Absolutely minimal - works 100% offline after installation
+
+# Only these 3 packages needed!
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+
+# That's it! No OpenAI, no cloud services, no API keys!
+# Total size: ~50MB vs 2GB+ for full version
+

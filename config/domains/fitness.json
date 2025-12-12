@@ -1,0 +1,126 @@
+{
+  "domain_name": "fitness",
+  "description": "Fitness and wellness assistant for workouts, nutrition, and health tracking",
+  "system_prompt": "You are Coach Max, a energetic fitness trainer. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with workouts, nutrition, or fitness goals, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses motivating and upbeat, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "create_workout_plan",
+      "entities": [
+        "fitness_goal",
+        "experience_level",
+        "available_equipment",
+        "days_per_week"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/workouts/plans",
+      "api_method": "POST",
+      "response_template": "Custom workout plan created! Goal: {fitness_goal}. Level: {experience_level}. Schedule: {days_per_week} days/week. Equipment: {available_equipment}. Plan ID: {plan_id}. Week 1: {week_1_workouts}. Track progress in the app! 💪",
+      "requires_auth": true
+    },
+    {
+      "name": "log_workout",
+      "entities": [
+        "workout_type",
+        "duration",
+        "calories",
+        "notes"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/workouts/log",
+      "api_method": "POST",
+      "response_template": "Great workout! {workout_type} for {duration} minutes. Calories burned: ~{calories}. This week: {weekly_total} minutes. Streak: {streak_days} days! Notes: {notes}. Keep crushing it! 🔥",
+      "requires_auth": true
+    },
+    {
+      "name": "book_class",
+      "entities": [
+        "class_type",
+        "instructor",
+        "date",
+        "time"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/classes/book",
+      "api_method": "POST",
+      "response_template": "Class booked! {class_type} with {instructor}. {date} at {time}. Location: {location}. Spots left: {spots_available}. Bring: {required_items}. Cancellation: up to {cancel_window} hours before. See you there! 🏋️",
+      "requires_auth": true
+    },
+    {
+      "name": "track_nutrition",
+      "entities": [
+        "meal_type",
+        "food_items",
+        "calories"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/nutrition/log",
+      "api_method": "POST",
+      "response_template": "{meal_type} logged! {food_items}. Calories: {calories}. Today's total: {daily_calories}/{calorie_goal}. Macros: Protein {protein}g, Carbs {carbs}g, Fat {fat}g. Remaining: {calories_remaining} cal",
+      "requires_auth": true
+    },
+    {
+      "name": "get_meal_plan",
+      "entities": [
+        "diet_type",
+        "calorie_target",
+        "meals_per_day"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/nutrition/meal-plan",
+      "api_method": "GET",
+      "response_template": "{diet_type} meal plan ready! Target: {calorie_target} cal/day. {meals_per_day} meals. Week 1: {meal_plan_summary}. Grocery list: {grocery_list}. Recipes: {recipe_urls}. Enjoy healthy eating! 🥗",
+      "requires_auth": true
+    },
+    {
+      "name": "check_progress",
+      "entities": [
+        "metric_type",
+        "time_period"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/progress",
+      "api_method": "GET",
+      "response_template": "{metric_type} progress over {time_period}: {progress_data}. Starting: {start_value}. Current: {current_value}. Change: {change}. Goal: {goal_value}. You're {percentage}% there! 📈",
+      "requires_auth": true
+    },
+    {
+      "name": "set_fitness_goal",
+      "entities": [
+        "goal_type",
+        "target_value",
+        "deadline"
+      ],
+      "api_endpoint": "https://api.fitness.example.com/v1/goals",
+      "api_method": "POST",
+      "response_template": "Goal set! {goal_type}: {target_value} by {deadline}. Current: {current_value}. Weekly target: {weekly_target}. Recommended: {recommendations}. Goal ID: {goal_id}. You can do this! 🎯",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "fitness_knowledge",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Coach Max, your energetic fitness trainer. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "motivation": "🔥 You're stronger than you think! Keep going!",
+    "achievement": "🎉 Amazing! You just hit a new milestone!"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with workouts, nutrition, or fitness goals?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "support_email": "support@fitness.example.com",
+    "workout_types": [
+      "cardio",
+      "strength",
+      "yoga",
+      "hiit",
+      "pilates",
+      "cycling"
+    ],
+    "diet_types": [
+      "balanced",
+      "keto",
+      "vegan",
+      "paleo",
+      "mediterranean"
+    ]
+  }
+}

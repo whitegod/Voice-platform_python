@@ -1,0 +1,197 @@
+{
+  "domain_name": "ecommerce",
+  "description": "Online shopping assistant for product search, cart management, and checkout",
+  "system_prompt": "You are Jamie, a enthusiastic shopping assistant. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with finding products, checking orders, or shopping recommendations, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses friendly and helpful, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "search_products",
+      "entities": [
+        "product_type",
+        "brand",
+        "price_range",
+        "color",
+        "size",
+        "category"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/products/search",
+      "api_method": "GET",
+      "response_template": "Found {count} {product_type} matching your criteria. Price range: {price_range}. Top picks: {product_list}. Would you like to see more details or add any to your cart?",
+      "requires_auth": false
+    },
+    {
+      "name": "get_product_details",
+      "entities": [
+        "product_id",
+        "product_name"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/products/{product_id}",
+      "api_method": "GET",
+      "response_template": "{product_name} - ${price}. {description}. Rating: {rating}/5 ({review_count} reviews). Available colors: {colors}. Sizes: {sizes}. Stock: {stock_status}. Free shipping on orders over $50!",
+      "requires_auth": false
+    },
+    {
+      "name": "add_to_cart",
+      "entities": [
+        "product_id",
+        "quantity",
+        "size",
+        "color"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/cart/items",
+      "api_method": "POST",
+      "response_template": "Added {quantity}x {product_name} ({size}, {color}) to your cart. Cart total: ${cart_total}. {items_in_cart} items. {savings_message}",
+      "requires_auth": true
+    },
+    {
+      "name": "view_cart",
+      "entities": [],
+      "api_endpoint": "https://api.shop.example.com/v1/cart",
+      "api_method": "GET",
+      "response_template": "Your cart has {item_count} items totaling ${subtotal}. Shipping: ${shipping}. Tax: ${tax}. Grand total: ${total}. {discount_info}. Ready to checkout?",
+      "requires_auth": true
+    },
+    {
+      "name": "remove_from_cart",
+      "entities": [
+        "product_id",
+        "item_index"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/cart/items/{product_id}",
+      "api_method": "DELETE",
+      "response_template": "Removed {product_name} from your cart. Updated total: ${new_total}. {items_remaining} items remaining.",
+      "requires_auth": true
+    },
+    {
+      "name": "apply_coupon",
+      "entities": [
+        "coupon_code"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/cart/coupon",
+      "api_method": "POST",
+      "response_template": "Coupon '{coupon_code}' applied! Discount: ${discount_amount} ({discount_percent}% off). New total: ${new_total}. You saved ${savings}!",
+      "requires_auth": true
+    },
+    {
+      "name": "checkout",
+      "entities": [
+        "shipping_address",
+        "payment_method",
+        "billing_address"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/orders",
+      "api_method": "POST",
+      "response_template": "Order placed successfully! Order #: {order_id}. Total: ${total}. Shipping to: {shipping_address}. Estimated delivery: {delivery_date}. Confirmation sent to {email}. Track your order: {tracking_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "track_order",
+      "entities": [
+        "order_id"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/orders/{order_id}/tracking",
+      "api_method": "GET",
+      "response_template": "Order {order_id}: {status}. Current location: {current_location}. Tracking #: {tracking_number}. Estimated delivery: {delivery_date}. Last update: {last_update}",
+      "requires_auth": true
+    },
+    {
+      "name": "return_product",
+      "entities": [
+        "order_id",
+        "product_id",
+        "reason"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/returns",
+      "api_method": "POST",
+      "response_template": "Return initiated for order {order_id}. Reason: {reason}. Return ID: {return_id}. Print your free return label: {label_url}. Refund of ${refund_amount} will be processed within 5-7 days after we receive the item.",
+      "requires_auth": true
+    },
+    {
+      "name": "product_recommendations",
+      "entities": [
+        "based_on_product",
+        "category",
+        "preference"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/recommendations",
+      "api_method": "GET",
+      "response_template": "Based on {based_on_product}, you might also like: {recommendations}. Customers who bought this also bought: {also_bought}. Special deals on these items!",
+      "requires_auth": false
+    },
+    {
+      "name": "check_availability",
+      "entities": [
+        "product_id",
+        "zip_code",
+        "store_location"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/products/{product_id}/availability",
+      "api_method": "GET",
+      "response_template": "{product_name} availability: Online: {online_stock}. Nearby stores: {store_availability}. Can ship to {zip_code} in {ship_days} days. In-store pickup available at {pickup_locations}.",
+      "requires_auth": false
+    },
+    {
+      "name": "compare_products",
+      "entities": [
+        "product_ids"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/products/compare",
+      "api_method": "POST",
+      "response_template": "Product comparison: {comparison_table}. Best value: {best_value}. Highest rated: {highest_rated}. Feature differences: {differences}",
+      "requires_auth": false
+    },
+    {
+      "name": "save_for_later",
+      "entities": [
+        "product_id"
+      ],
+      "api_endpoint": "https://api.shop.example.com/v1/wishlist",
+      "api_method": "POST",
+      "response_template": "Added {product_name} to your wishlist. We'll notify you of price drops and back-in-stock alerts. {wishlist_count} items in your wishlist.",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "product_catalog",
+    "top_k": 10,
+    "score_threshold": 0.65
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Jamie, your enthusiastic shopping assistant. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "shipping_promo": "🎉 Free shipping on orders over $50!",
+    "sale_alert": "💰 Sale! Save up to {discount}% on {category}!",
+    "low_stock": "⚠️ Only {quantity} left in stock - order soon!",
+    "price_match": "We offer price matching! Found it cheaper elsewhere? Let us know."
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with finding products, checking orders, or shopping recommendations?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-15",
+    "contact": "shop@example.com",
+    "return_policy_days": 30,
+    "free_shipping_threshold": 50,
+    "payment_methods": [
+      "credit_card",
+      "debit_card",
+      "paypal",
+      "apple_pay",
+      "google_pay"
+    ],
+    "shipping_options": [
+      "standard",
+      "express",
+      "overnight",
+      "store_pickup"
+    ],
+    "categories": [
+      "electronics",
+      "clothing",
+      "home_garden",
+      "sports_outdoors",
+      "books",
+      "toys_games"
+    ]
+  }
+}

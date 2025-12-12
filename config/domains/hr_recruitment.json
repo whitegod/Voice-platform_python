@@ -1,0 +1,118 @@
+{
+  "domain_name": "hr_recruitment",
+  "description": "HR assistant for job applications, interviews, onboarding, and employee services",
+  "system_prompt": "You are Casey, a friendly HR specialist. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with job applications, interviews, or HR questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses supportive and professional, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "apply_for_job",
+      "entities": [
+        "job_title",
+        "department",
+        "location",
+        "resume_id"
+      ],
+      "api_endpoint": "https://api.hr.example.com/v1/applications",
+      "api_method": "POST",
+      "response_template": "Application submitted for {job_title} in {department} ({location}). Application ID: {application_id}. Resume: {resume_id} attached. Next steps: {next_steps}. Timeline: {timeline}. You'll hear from us within {response_time}",
+      "requires_auth": true
+    },
+    {
+      "name": "schedule_interview",
+      "entities": [
+        "application_id",
+        "interview_type",
+        "preferred_date",
+        "preferred_time"
+      ],
+      "api_endpoint": "https://api.hr.example.com/v1/interviews",
+      "api_method": "POST",
+      "response_template": "Interview scheduled: {interview_type} for {job_title}. Date: {confirmed_date} at {confirmed_time}. Interviewer: {interviewer_name}. Format: {format}. Location/Link: {location}. Duration: {duration} minutes. Preparation tips: {tips}",
+      "requires_auth": true
+    },
+    {
+      "name": "check_application_status",
+      "entities": [
+        "application_id"
+      ],
+      "api_endpoint": "https://api.hr.example.com/v1/applications/{application_id}",
+      "api_method": "GET",
+      "response_template": "Application {application_id} for {job_title}: Status: {status}. Stage: {current_stage}. Last update: {last_update}. Next step: {next_step}. Contact: {recruiter_email}",
+      "requires_auth": true
+    },
+    {
+      "name": "request_time_off",
+      "entities": [
+        "start_date",
+        "end_date",
+        "time_off_type",
+        "reason"
+      ],
+      "api_endpoint": "https://api.hr.example.com/v1/time-off",
+      "api_method": "POST",
+      "response_template": "Time off request submitted: {time_off_type} from {start_date} to {end_date}. Days: {total_days}. Request ID: {request_id}. Manager: {manager_name} will review. Balance after: {remaining_balance} days",
+      "requires_auth": true
+    },
+    {
+      "name": "view_benefits",
+      "entities": [
+        "benefit_type"
+      ],
+      "api_endpoint": "https://api.hr.example.com/v1/benefits",
+      "api_method": "GET",
+      "response_template": "Your benefits: {benefits_summary}. {benefit_type} details: {specific_details}. Enrollment period: {enrollment_period}. Coverage: {coverage_details}. Cost: {cost_details}. Documents: {benefits_documents}",
+      "requires_auth": true
+    },
+    {
+      "name": "update_personal_info",
+      "entities": [
+        "field_name",
+        "new_value"
+      ],
+      "api_endpoint": "https://api.hr.example.com/v1/employee/update",
+      "api_method": "PATCH",
+      "response_template": "Personal information updated: {field_name} changed to {new_value}. Effective immediately. Updated documents will be available in your employee portal within 24 hours.",
+      "requires_auth": true
+    },
+    {
+      "name": "onboarding_status",
+      "entities": [],
+      "api_endpoint": "https://api.hr.example.com/v1/onboarding",
+      "api_method": "GET",
+      "response_template": "Welcome aboard! Onboarding progress: {completion_percentage}%. Completed: {completed_tasks}. Pending: {pending_tasks}. Start date: {start_date}. Manager: {manager_name}. Buddy: {buddy_name}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "hr_policies",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Casey, your friendly HR specialist. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "new_hire": "Welcome to the team! 🎉 Let's get you started with onboarding."
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with job applications, interviews, or HR questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "hr_contact": "hr@company.com",
+    "departments": [
+      "engineering",
+      "sales",
+      "marketing",
+      "operations",
+      "finance",
+      "hr"
+    ],
+    "benefits": [
+      "health",
+      "dental",
+      "vision",
+      "401k",
+      "pto",
+      "remote_work"
+    ]
+  }
+}

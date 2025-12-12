@@ -1,0 +1,178 @@
+version: "3.1"
+
+intents:
+  # Real Estate Intents
+  - search_property
+  - get_property_details
+  - schedule_viewing
+  - get_neighborhood_info
+  - calculate_mortgage
+  
+  # Food Delivery Intents
+  - search_restaurants
+  - view_menu
+  - add_to_cart
+  - view_cart
+  - place_order
+  - track_order
+  - cancel_order
+  - get_deals
+  
+  # Customer Support Intents
+  - create_ticket
+  - check_ticket_status
+  - search_knowledge_base
+  - troubleshoot_issue
+  - request_refund
+  - escalate_to_human
+  - check_order_status
+  - update_account_info
+  - report_bug
+  - request_feature
+  
+  # Common Intents
+  - greet
+  - goodbye
+  - thank
+  - affirm
+  - deny
+  - help
+  - out_of_scope
+
+entities:
+  # Real Estate Entities
+  - bedrooms
+  - bathrooms
+  - location
+  - price_range
+  - property_type
+  - property_id
+  - date
+  - time
+  - contact_name
+  - contact_phone
+  - down_payment
+  - interest_rate
+  - loan_term
+  
+  # Food Delivery Entities
+  - cuisine_type
+  - dietary_restrictions
+  - restaurant_id
+  - restaurant_name
+  - item_id
+  - item_name
+  - quantity
+  - special_instructions
+  - delivery_address
+  - payment_method
+  - delivery_instructions
+  - order_id
+  - reason
+  
+  # Customer Support Entities
+  - issue_type
+  - description
+  - priority
+  - product_name
+  - ticket_id
+  - query
+  - category
+  - problem_type
+  - error_message
+  - device_type
+  - amount
+  - urgency
+  - field_name
+  - new_value
+  - bug_description
+  - steps_to_reproduce
+  - severity
+  - feature_description
+  - use_case
+
+slots:
+  # Session tracking
+  domain:
+    type: text
+    mappings:
+      - type: custom
+  
+  session_id:
+    type: text
+    mappings:
+      - type: custom
+  
+  # Real Estate Slots
+  bedrooms:
+    type: float
+    mappings:
+      - type: from_entity
+        entity: bedrooms
+  
+  bathrooms:
+    type: float
+    mappings:
+      - type: from_entity
+        entity: bathrooms
+  
+  location:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: location
+  
+  price_range:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: price_range
+  
+  property_type:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: property_type
+  
+  # Food Delivery Slots
+  cuisine_type:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: cuisine_type
+  
+  restaurant_name:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: restaurant_name
+  
+  item_name:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: item_name
+  
+  quantity:
+    type: float
+    mappings:
+      - type: from_entity
+        entity: quantity
+
+responses:
+  utter_greet:
+    - text: "Hello! How can I help you today?"
+  
+  utter_goodbye:
+    - text: "Goodbye! Have a great day!"
+  
+  utter_help:
+    - text: "I'm here to help! What would you like to know?"
+  
+  utter_default:
+    - text: "I'm not sure I understand. Could you please rephrase?"
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+

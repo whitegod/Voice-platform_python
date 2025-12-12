@@ -1,0 +1,215 @@
+================================================================================
+                    QUICK TEST GUIDE - Voice-as-a-Service
+================================================================================
+
+YOUR PLATFORM IS RUNNING! ✅
+
+Access: http://localhost:8001/docs
+API Key: offline_demo_key
+
+================================================================================
+STEP 1: AUTHORIZE
+================================================================================
+
+1. Click "Authorize" button (🔒 lock icon, top right)
+2. Enter: Bearer offline_demo_key
+3. Click "Authorize" again
+4. Click "Close"
+
+✅ You're authorized!
+
+================================================================================
+STEP 2: TEST YOUR FIRST REQUEST
+================================================================================
+
+1. Find: POST /api/v1/process/text (green button)
+2. Click on it to expand
+3. Click "Try it out"
+4. Copy and paste this:
+
+{
+  "text": "How do I reset my password?",
+  "user_id": "test_user",
+  "domain": "customer_support",
+  "session_id": null,
+  "return_audio": false
+}
+
+5. Click "Execute"
+6. Scroll down to see response!
+
+✅ You should see an intelligent answer!
+
+================================================================================
+STEP 3: TEST REAL ESTATE DOMAIN
+================================================================================
+
+Click "Try it out" again and paste:
+
+{
+  "text": "I'm looking for a 3 bedroom house in downtown",
+  "user_id": "buyer123",
+  "domain": "real_estate",
+  "session_id": null,
+  "return_audio": false
+}
+
+Click "Execute"
+
+✅ Real estate assistant responds!
+
+================================================================================
+TEST ALL 19 DOMAINS - Just change "domain" field!
+================================================================================
+
+Customer Support:    "domain": "customer_support"
+Healthcare:          "domain": "healthcare"
+E-commerce:          "domain": "ecommerce"
+Banking:             "domain": "banking"
+Insurance:           "domain": "insurance"
+Legal:               "domain": "legal"
+HR/Recruitment:      "domain": "hr_recruitment"
+Travel:              "domain": "travel"
+Education:           "domain": "education"
+Fitness:             "domain": "fitness"
+Events:              "domain": "events"
+Home Services:       "domain": "home_services"
+Personal Finance:    "domain": "personal_finance"
+Recipes:             "domain": "recipes"
+News:                "domain": "news"
+Tasks:               "domain": "tasks"
+Pet Care:            "domain": "pet_care"
+Real Estate:         "domain": "real_estate"
+Food Delivery:       "domain": "food_delivery"
+
+================================================================================
+REAL ESTATE TEST EXAMPLES
+================================================================================
+
+Search for Properties:
+{
+  "text": "Find me a 3 bedroom house in downtown",
+  "user_id": "buyer1",
+  "domain": "real_estate"
+}
+
+Calculate Mortgage:
+{
+  "text": "Calculate mortgage for $400,000 with 20% down",
+  "user_id": "buyer1",
+  "domain": "real_estate"
+}
+
+Schedule Viewing:
+{
+  "text": "Schedule a viewing for this Saturday at 2pm",
+  "user_id": "buyer1",
+  "domain": "real_estate"
+}
+
+Neighborhood Info:
+{
+  "text": "Tell me about the downtown area",
+  "user_id": "buyer1",
+  "domain": "real_estate"
+}
+
+Property Details:
+{
+  "text": "Tell me about property 12345",
+  "user_id": "buyer1",
+  "domain": "real_estate"
+}
+
+================================================================================
+OTHER DOMAIN EXAMPLES
+================================================================================
+
+Healthcare:
+{
+  "text": "I need to schedule an appointment with a cardiologist",
+  "user_id": "patient1",
+  "domain": "healthcare"
+}
+
+E-commerce:
+{
+  "text": "Find me a laptop under $1000",
+  "user_id": "shopper1",
+  "domain": "ecommerce"
+}
+
+Banking:
+{
+  "text": "What is my account balance?",
+  "user_id": "customer1",
+  "domain": "banking"
+}
+
+Travel:
+{
+  "text": "Book a flight to Paris",
+  "user_id": "traveler1",
+  "domain": "travel"
+}
+
+Food Delivery:
+{
+  "text": "Order pizza from nearby restaurants",
+  "user_id": "hungry1",
+  "domain": "food_delivery"
+}
+
+================================================================================
+WHAT TO CHECK IN RESPONSE
+================================================================================
+
+✅ "success": true
+✅ "text_response": Has intelligent answer
+✅ "intent": Correct intent detected
+✅ "session_id": Present (for conversation tracking)
+✅ "metadata": Shows domain and mode
+
+Example good response:
+{
+  "success": true,
+  "text_response": "I've searched our database...",
+  "intent": "search_property",
+  "entities": {"number": "3"},
+  "session_id": "abc-123",
+  "metadata": {
+    "mode": "offline",
+    "turns": 1,
+    "domain": "real_estate"
+  }
+}
+
+================================================================================
+TIPS
+================================================================================
+
+💡 Copy the session_id and reuse it for follow-up questions!
+💡 Try natural language - don't worry about exact wording
+💡 Test all 19 domains - just change the "domain" field
+💡 Click "Try it out" for each test
+💡 Use the browser interface - easier than command line!
+
+================================================================================
+NEED HELP?
+================================================================================
+
+Full Guide: COMPLETE_TEST_GUIDE.md
+Real Estate: TEST_REAL_ESTATE.md
+All Domains: ALL_DOMAINS_GUIDE.md
+
+================================================================================
+YOUR PLATFORM IS READY! START TESTING! 🚀
+================================================================================
+
+Access: http://localhost:8001/docs
+API Key: offline_demo_key
+Domains: 19 loaded
+Status: ✅ Running
+
+Just click "Try it out" and start testing!
+

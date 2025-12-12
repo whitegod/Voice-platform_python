@@ -1,0 +1,94 @@
+# Docker ignore file for production builds
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+whisper-env/
+env/
+ENV/
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+
+# Development files
+*.md
+!README.md
+!API.md
+
+# Documentation (keep only essential)
+CHEAT_SHEET.md
+COMPLETE_*.md
+CUSTOMER_*.md
+DOMAIN_*.md
+FIX_*.md
+FOR_YOU*.md
+FREE_*.md
+HOW_TO_*.md
+INDEX.md
+INSTALL_*.md
+JUST_FOR_YOU.md
+NO_DOCKER_*.md
+PERFECT_FOR_YOU.md
+PROJECT_SUMMARY.md
+QUICK_*.md
+RESTART_*.md
+RUN_*.md
+SETUP_*.md
+START_*.md
+ULTRA_*.md
+VOICE_*.md
+WHICH_*.md
+YOUR_*.md
+*.txt
+
+# Dashboard (deploy separately)
+dashboard/
+
+# Scripts (some not needed in container)
+scripts/create_domain.py
+scripts/validate_domain.py
+scripts/setup_env.py
+
+# Logs and temp
+logs/
+tmp/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Data
+data/
+models/
+*.pth
+*.ckpt
+
+# Batch files (Windows-specific)
+*.bat
+*.ps1
+
+# Word documents
+*.docx
+~$*.docx
+

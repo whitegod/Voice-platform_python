@@ -1,0 +1,121 @@
+{
+  "domain_name": "education",
+  "description": "Educational platform assistant for courses, enrollment, assignments, and academic support",
+  "system_prompt": "You are Prof. Lee, a supportive learning coach. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with courses, assignments, or learning questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses encouraging and knowledgeable, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "browse_courses",
+      "entities": [
+        "subject",
+        "level",
+        "format",
+        "duration"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/courses/search",
+      "api_method": "GET",
+      "response_template": "Found {course_count} courses in {subject}. Level: {level}. Top courses: {course_list}. Format: {format}. Duration: {duration}. Next start date: {start_date}. Enrollment open!",
+      "requires_auth": false
+    },
+    {
+      "name": "enroll_in_course",
+      "entities": [
+        "course_id",
+        "course_name",
+        "start_date"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/enrollments",
+      "api_method": "POST",
+      "response_template": "Successfully enrolled in {course_name}! Course ID: {course_id}. Starts: {start_date}. Instructor: {instructor_name}. Your class schedule: {schedule}. First assignment due: {first_deadline}. Access course materials: {course_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "view_assignments",
+      "entities": [
+        "course_id",
+        "status"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/assignments",
+      "api_method": "GET",
+      "response_template": "{course_name} assignments: {assignment_count} total. Upcoming: {upcoming_assignments}. Overdue: {overdue_count}. Completed: {completed_count}. Next due: {next_deadline}. Grade average: {grade_average}%",
+      "requires_auth": true
+    },
+    {
+      "name": "check_grades",
+      "entities": [
+        "course_id",
+        "semester"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/grades",
+      "api_method": "GET",
+      "response_template": "Your grades for {semester}: GPA: {gpa}. {course_name}: {grade} ({percentage}%). Class rank: {rank}/{total_students}. Assignments: {assignment_grades}. View transcript: {transcript_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "submit_assignment",
+      "entities": [
+        "assignment_id",
+        "file_url"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/assignments/submit",
+      "api_method": "POST",
+      "response_template": "Assignment submitted! {assignment_name} for {course_name}. Submission ID: {submission_id}. Submitted: {submission_time}. Status: {status}. Grading by: {grading_date}. Late: {late_status}",
+      "requires_auth": true
+    },
+    {
+      "name": "schedule_tutoring",
+      "entities": [
+        "subject",
+        "tutor_name",
+        "date",
+        "time"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/tutoring",
+      "api_method": "POST",
+      "response_template": "Tutoring session scheduled! {subject} with {tutor_name}. Date: {date} at {time}. Duration: {duration} minutes. Location: {location}. Session ID: {session_id}. Prepare: {preparation_notes}",
+      "requires_auth": true
+    },
+    {
+      "name": "access_library",
+      "entities": [
+        "search_query",
+        "resource_type"
+      ],
+      "api_endpoint": "https://api.edu.example.com/v1/library/search",
+      "api_method": "GET",
+      "response_template": "Library search for '{search_query}': Found {result_count} {resource_type}. Top resources: {resource_list}. Available: {availability}. Citation: {citation}. Access: {access_url}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "education_resources",
+    "top_k": 7,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Prof. Lee, your supportive learning coach. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "motivation": "💪 You've got this! Keep up the great work!",
+    "deadline_reminder": "⏰ Reminder: {assignment_name} due in {time_remaining}!"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with courses, assignments, or learning questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "support_email": "support@edu.example.com",
+    "subjects": [
+      "math",
+      "science",
+      "english",
+      "history",
+      "computer_science",
+      "arts"
+    ],
+    "formats": [
+      "online",
+      "in_person",
+      "hybrid",
+      "self_paced"
+    ]
+  }
+}

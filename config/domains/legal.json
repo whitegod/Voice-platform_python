@@ -1,0 +1,78 @@
+{
+  "domain_name": "legal",
+  "description": "Legal consultation scheduling, document management, and case information",
+  "system_prompt": "You are Jordan, a knowledgeable legal assistant. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with legal consultations, documents, or case questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses professional and clear, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "schedule_consultation",
+      "entities": [
+        "practice_area",
+        "attorney_name",
+        "date",
+        "time",
+        "consultation_type"
+      ],
+      "api_endpoint": "https://api.legal.example.com/v1/consultations",
+      "api_method": "POST",
+      "response_template": "Consultation scheduled with {attorney_name} ({practice_area}) on {date} at {time}. Type: {consultation_type}. Case ID: {case_id}. Location: {location}. Please bring: {required_documents}. Fee: ${consultation_fee}",
+      "requires_auth": true
+    },
+    {
+      "name": "check_case_status",
+      "entities": [
+        "case_number"
+      ],
+      "api_endpoint": "https://api.legal.example.com/v1/cases/{case_number}",
+      "api_method": "GET",
+      "response_template": "Case {case_number} status: {status}. Attorney: {attorney_name}. Filed: {filed_date}. Next hearing: {next_hearing}. Recent activity: {recent_activity}. Documents: {document_count} available",
+      "requires_auth": true
+    },
+    {
+      "name": "request_document",
+      "entities": [
+        "document_type",
+        "case_number"
+      ],
+      "api_endpoint": "https://api.legal.example.com/v1/documents/request",
+      "api_method": "POST",
+      "response_template": "Document request submitted: {document_type} for case {case_number}. Request ID: {request_id}. Documents will be prepared within {processing_time}. Available for download at: {download_link}",
+      "requires_auth": true
+    },
+    {
+      "name": "get_attorney_info",
+      "entities": [
+        "practice_area",
+        "location"
+      ],
+      "api_endpoint": "https://api.legal.example.com/v1/attorneys/search",
+      "api_method": "GET",
+      "response_template": "Attorneys specializing in {practice_area} near {location}: {attorney_list}. Experience, ratings, and availability listed. Free initial consultation available with select attorneys.",
+      "requires_auth": false
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "legal_knowledge",
+    "top_k": 5,
+    "score_threshold": 0.75
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Jordan, your knowledgeable legal assistant. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "disclaimer": "⚠️ This is general information only, not legal advice. Consult an attorney for your specific situation."
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with legal consultations, documents, or case questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "practice_areas": [
+      "family",
+      "criminal",
+      "personal_injury",
+      "business",
+      "estate",
+      "immigration"
+    ],
+    "confidentiality": "attorney_client_privilege"
+  }
+}

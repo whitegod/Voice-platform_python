@@ -1,0 +1,105 @@
+{
+  "domain_name": "insurance",
+  "description": "Insurance policy management, claims processing, and coverage inquiries",
+  "system_prompt": "You are Taylor, a knowledgeable insurance advisor. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with claims, policies, or coverage questions, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses patient and informative, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "get_quote",
+      "entities": [
+        "insurance_type",
+        "coverage_amount",
+        "age",
+        "location"
+      ],
+      "api_endpoint": "https://api.insurance.example.com/v1/quotes",
+      "api_method": "POST",
+      "response_template": "Quote for {insurance_type}: ${monthly_premium}/month (${annual_premium}/year). Coverage: ${coverage_amount}. Deductible: ${deductible}. Quote ID: {quote_id}. Valid for 30 days. Apply now to lock in this rate!",
+      "requires_auth": false
+    },
+    {
+      "name": "file_claim",
+      "entities": [
+        "policy_number",
+        "incident_date",
+        "claim_type",
+        "description",
+        "amount"
+      ],
+      "api_endpoint": "https://api.insurance.example.com/v1/claims",
+      "api_method": "POST",
+      "response_template": "Claim filed successfully. Claim #: {claim_number}. Type: {claim_type}. Incident date: {incident_date}. Estimated amount: ${amount}. Your adjuster: {adjuster_name} ({adjuster_phone}). Next steps: {next_steps}",
+      "requires_auth": true
+    },
+    {
+      "name": "check_claim_status",
+      "entities": [
+        "claim_number"
+      ],
+      "api_endpoint": "https://api.insurance.example.com/v1/claims/{claim_number}",
+      "api_method": "GET",
+      "response_template": "Claim {claim_number} status: {status}. Filed: {filed_date}. Last update: {last_update}. Approved amount: ${approved_amount}. Payment status: {payment_status}. Estimated completion: {completion_date}",
+      "requires_auth": true
+    },
+    {
+      "name": "view_policy",
+      "entities": [
+        "policy_number",
+        "policy_type"
+      ],
+      "api_endpoint": "https://api.insurance.example.com/v1/policies/{policy_number}",
+      "api_method": "GET",
+      "response_template": "Policy {policy_number} ({policy_type}): Coverage: ${coverage_amount}. Premium: ${premium}/month. Deductible: ${deductible}. Expires: {expiration_date}. Covered: {covered_items}. Download policy: {policy_document}",
+      "requires_auth": true
+    },
+    {
+      "name": "update_policy",
+      "entities": [
+        "policy_number",
+        "change_type",
+        "new_value"
+      ],
+      "api_endpoint": "https://api.insurance.example.com/v1/policies/{policy_number}/update",
+      "api_method": "PATCH",
+      "response_template": "Policy {policy_number} updated: {change_type} changed to {new_value}. New premium: ${new_premium}. Effective: {effective_date}. Confirmation sent to {email}",
+      "requires_auth": true
+    },
+    {
+      "name": "add_beneficiary",
+      "entities": [
+        "policy_number",
+        "beneficiary_name",
+        "relationship",
+        "percentage"
+      ],
+      "api_endpoint": "https://api.insurance.example.com/v1/beneficiaries",
+      "api_method": "POST",
+      "response_template": "Beneficiary added to policy {policy_number}: {beneficiary_name} ({relationship}) - {percentage}% of benefits. Beneficiary ID: {beneficiary_id}. Documents mailed to your address.",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "insurance_knowledge",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Taylor, your knowledgeable insurance advisor. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "claim_emergency": "For urgent claims, call our 24/7 hotline: 1-800-CLAIM-24"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with claims, policies, or coverage questions?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "claims_hotline": "1-800-CLAIM-24",
+    "insurance_types": [
+      "auto",
+      "home",
+      "life",
+      "health",
+      "business",
+      "renters"
+    ]
+  }
+}

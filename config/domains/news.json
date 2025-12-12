@@ -1,0 +1,101 @@
+{
+  "domain_name": "news",
+  "description": "News briefing assistant for personalized news, headlines, and current events",
+  "system_prompt": "You are Sam, a knowledgeable news curator. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with news updates, articles, or current events, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses informative and balanced, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "get_headlines",
+      "entities": [
+        "category",
+        "region"
+      ],
+      "api_endpoint": "https://api.news.example.com/v1/headlines",
+      "api_method": "GET",
+      "response_template": "Top headlines in {category} ({region}): {headlines}. Breaking: {breaking_news}. Trending: {trending_topics}. Last updated: {timestamp}. Read more: {article_links}",
+      "requires_auth": false
+    },
+    {
+      "name": "search_news",
+      "entities": [
+        "keywords",
+        "date_range",
+        "source"
+      ],
+      "api_endpoint": "https://api.news.example.com/v1/search",
+      "api_method": "GET",
+      "response_template": "Found {article_count} articles about '{keywords}' from {date_range}. Sources: {source}. Top stories: {top_stories}. Related topics: {related_topics}. Save search: {save_url}",
+      "requires_auth": false
+    },
+    {
+      "name": "daily_briefing",
+      "entities": [
+        "topics",
+        "length"
+      ],
+      "api_endpoint": "https://api.news.example.com/v1/briefing",
+      "api_method": "GET",
+      "response_template": "Your personalized briefing ({length}): {briefing_summary}. Top stories in: {topics}. Must-read: {must_read}. In brief: {quick_summaries}. Audio version: {audio_url}. Schedule: {schedule_options}",
+      "requires_auth": true
+    },
+    {
+      "name": "follow_topic",
+      "entities": [
+        "topic",
+        "notification_frequency"
+      ],
+      "api_endpoint": "https://api.news.example.com/v1/following",
+      "api_method": "POST",
+      "response_template": "Now following: {topic}. Notifications: {notification_frequency}. Related topics: {related_topics}. Your topics: {all_topics}. Customize alerts: {alert_settings}",
+      "requires_auth": true
+    },
+    {
+      "name": "get_article_summary",
+      "entities": [
+        "article_id"
+      ],
+      "api_endpoint": "https://api.news.example.com/v1/articles/{article_id}/summary",
+      "api_method": "GET",
+      "response_template": "{article_title}: {summary}. Key points: {key_points}. Source: {source}. Published: {publish_date}. Read time: {read_time}. Full article: {article_url}. Related: {related_articles}",
+      "requires_auth": false
+    },
+    {
+      "name": "fact_check",
+      "entities": [
+        "claim"
+      ],
+      "api_endpoint": "https://api.news.example.com/v1/fact-check",
+      "api_method": "GET",
+      "response_template": "Fact check for '{claim}': Verdict: {verdict}. Evidence: {evidence}. Sources: {sources}. Context: {context}. Rating: {rating}. Last verified: {verification_date}",
+      "requires_auth": false
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "news_archive",
+    "top_k": 8,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Sam, your knowledgeable news curator. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "breaking": "🚨 Breaking News: {headline}",
+    "trending": "📈 Trending now: {topic}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with news updates, articles, or current events?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "categories": [
+      "world",
+      "politics",
+      "business",
+      "technology",
+      "science",
+      "health",
+      "sports",
+      "entertainment"
+    ],
+    "sources": "aggregated from trusted news outlets",
+    "update_frequency": "real-time"
+  }
+}

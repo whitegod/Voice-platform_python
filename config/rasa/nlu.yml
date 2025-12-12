@@ -1,0 +1,184 @@
+version: "3.1"
+
+nlu:
+  # Real Estate Intents
+  - intent: search_property
+    examples: |
+      - I'm looking for a house
+      - Find me a [3](bedrooms) bedroom apartment in [downtown](location)
+      - Show me properties under [$500k](price_range)
+      - I need a [condo](property_type) with [2](bathrooms) bathrooms
+      - Search for homes in [Brooklyn](location)
+      - Looking for [apartment](property_type) with [3](bedrooms) beds
+      - Find [house](property_type) in [Miami](location) for [$400000](price_range)
+      - I want to buy a property
+      - Show me available listings
+
+  - intent: get_property_details
+    examples: |
+      - Tell me about property [12345](property_id)
+      - More details on this listing
+      - What are the features of property [ABC123](property_id)
+      - Show me property [98765](property_id)
+      - I want to know more about this house
+      - Property information for [XYZ789](property_id)
+      - Details about the apartment
+
+  - intent: schedule_viewing
+    examples: |
+      - Schedule a viewing
+      - I want to see the property
+      - Book a tour for [tomorrow](date) at [2pm](time)
+      - Can I visit on [Friday](date) at [10am](time)
+      - Arrange a showing
+      - Schedule property visit for [next week](date)
+      - Book viewing [this weekend](date)
+
+  - intent: get_neighborhood_info
+    examples: |
+      - What's [downtown](location) like
+      - Tell me about [Brooklyn](location) neighborhood
+      - How is the area in [Manhattan](location)
+      - School ratings in [Queens](location)
+      - Is [Bronx](location) safe
+      - Neighborhood information for [Staten Island](location)
+      - What amenities are in [Chelsea](location)
+
+  - intent: calculate_mortgage
+    examples: |
+      - Calculate mortgage for [$500000](price_range)
+      - How much would monthly payment be
+      - Mortgage calculator for [$400k](price_range) with [20%](down_payment) down
+      - What's the payment on [$350000](price_range)
+      - Calculate loan for [$600000](price_range) at [3.5%](interest_rate)
+      - Monthly payment estimate
+
+  # Food Delivery Intents
+  - intent: search_restaurants
+    examples: |
+      - Find [Italian](cuisine_type) restaurants
+      - I want [Chinese](cuisine_type) food
+      - Show me [pizza](cuisine_type) places near me
+      - Looking for [vegan](dietary_restrictions) restaurants
+      - Find [Mexican](cuisine_type) food in [downtown](location)
+      - Search [Indian](cuisine_type) restaurants
+      - I'm craving [Thai](cuisine_type) food
+      - Show [Japanese](cuisine_type) places nearby
+      - Find cheap [burgers](cuisine_type)
+
+  - intent: view_menu
+    examples: |
+      - Show menu for [Pizza Palace](restaurant_name)
+      - What does [Sushi Bar](restaurant_name) have
+      - Menu from restaurant [123](restaurant_id)
+      - What can I order from [Taco Bell](restaurant_name)
+      - Show me their menu
+      - What food do they have
+      - Browse menu
+
+  - intent: add_to_cart
+    examples: |
+      - Add [2](quantity) [pizzas](item_name) to cart
+      - I want [one](quantity) [burger](item_name)
+      - Order [3](quantity) [tacos](item_name)
+      - Add [sushi roll](item_name) to my order
+      - Get me [two](quantity) [sandwiches](item_name)
+      - I'll have the [pasta](item_name)
+      - Add [salad](item_name) with [no onions](special_instructions)
+
+  - intent: view_cart
+    examples: |
+      - Show my cart
+      - What's in my order
+      - View cart
+      - Check my basket
+      - What did I order
+      - Show current order
+
+  - intent: place_order
+    examples: |
+      - Place my order
+      - Checkout
+      - Complete order
+      - Confirm delivery
+      - I'm ready to order
+      - Process payment
+      - Deliver to [123 Main St](delivery_address)
+
+  - intent: track_order
+    examples: |
+      - Track my order
+      - Where's my food
+      - Order status for [12345](order_id)
+      - How long until delivery
+      - When will it arrive
+      - Check order [ABC123](order_id)
+
+  - intent: cancel_order
+    examples: |
+      - Cancel order [12345](order_id)
+      - I want to cancel my order
+      - Cancel delivery
+      - Stop my order
+      - I don't want it anymore
+
+  - intent: get_deals
+    examples: |
+      - Any deals available
+      - Show me offers
+      - What promotions do you have
+      - Are there discounts
+      - Special offers
+      - Current deals
+
+  # Common Intents
+  - intent: greet
+    examples: |
+      - hi
+      - hello
+      - hey
+      - good morning
+      - good evening
+      - what's up
+
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - see you later
+      - talk to you later
+      - have a good day
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yeah
+      - correct
+      - that's right
+      - sure
+      - exactly
+
+  - intent: deny
+    examples: |
+      - no
+      - nope
+      - not really
+      - don't think so
+      - no thanks
+
+  - intent: help
+    examples: |
+      - help me
+      - I need help
+      - what can you do
+      - how does this work
+      - assist me
+
+  - intent: out_of_scope
+    examples: |
+      - what's the weather
+      - tell me a joke
+      - who are you
+      - random question
+      - something else
+

@@ -1,0 +1,198 @@
+{
+  "domain_name": "customer_support",
+  "description": "AI-powered customer support assistant for handling inquiries, creating tickets, and providing solutions",
+  "system_prompt": "You are Chris, a patient problem solver. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with issues, questions, or support needs, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses helpful and understanding, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "create_ticket",
+      "entities": [
+        "issue_type",
+        "description",
+        "priority",
+        "product_name"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/tickets",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json",
+        "X-API-Version": "2.0"
+      },
+      "response_template": "I've created ticket #{ticket_id} for your {issue_type} issue with {product_name}. Priority: {priority}. You'll receive updates via email. Our team typically responds within {response_time}.",
+      "requires_auth": true
+    },
+    {
+      "name": "check_ticket_status",
+      "entities": [
+        "ticket_id"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/tickets/{ticket_id}",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Ticket #{ticket_id} status: {status}. {status_message}. Last updated: {last_updated}. Assigned to: {assigned_agent}.",
+      "requires_auth": true
+    },
+    {
+      "name": "search_knowledge_base",
+      "entities": [
+        "query",
+        "category"
+      ],
+      "api_endpoint": null,
+      "api_method": null,
+      "api_headers": {},
+      "response_template": "Here's what I found about {query}: {answer}. Was this helpful?",
+      "requires_auth": false
+    },
+    {
+      "name": "troubleshoot_issue",
+      "entities": [
+        "problem_type",
+        "error_message",
+        "device_type"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/troubleshoot",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Let's troubleshoot your {problem_type} on {device_type}. Try these steps: {troubleshooting_steps}",
+      "requires_auth": false
+    },
+    {
+      "name": "request_refund",
+      "entities": [
+        "order_id",
+        "reason",
+        "amount"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/refunds",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "I've submitted your refund request for order {order_id} (${amount}). Reason: {reason}. Refund ID: {refund_id}. Processing typically takes 5-7 business days.",
+      "requires_auth": true
+    },
+    {
+      "name": "escalate_to_human",
+      "entities": [
+        "reason",
+        "urgency"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/escalations",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "I understand you need to speak with a human agent. I'm connecting you now. Estimated wait time: {wait_time} minutes. Reference ID: {escalation_id}",
+      "requires_auth": false
+    },
+    {
+      "name": "check_order_status",
+      "entities": [
+        "order_id"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/orders/{order_id}",
+      "api_method": "GET",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Order {order_id}: {status}. Shipped: {ship_date}. Tracking: {tracking_number}. Expected delivery: {delivery_date}.",
+      "requires_auth": true
+    },
+    {
+      "name": "update_account_info",
+      "entities": [
+        "field_name",
+        "new_value"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/account/update",
+      "api_method": "PATCH",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Your {field_name} has been updated to {new_value}. Changes will take effect immediately.",
+      "requires_auth": true
+    },
+    {
+      "name": "report_bug",
+      "entities": [
+        "bug_description",
+        "steps_to_reproduce",
+        "severity"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/bugs",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Thank you for reporting this bug. Bug ID: {bug_id}. Severity: {severity}. Our engineering team will investigate and you'll receive updates.",
+      "requires_auth": false
+    },
+    {
+      "name": "request_feature",
+      "entities": [
+        "feature_description",
+        "use_case"
+      ],
+      "api_endpoint": "https://api.support.example.com/v1/feature-requests",
+      "api_method": "POST",
+      "api_headers": {
+        "Content-Type": "application/json"
+      },
+      "response_template": "Feature request submitted! Request ID: {request_id}. We'll review your suggestion: '{feature_description}'. You'll be notified of any updates.",
+      "requires_auth": false
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "customer_support_kb",
+    "top_k": 10,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Chris, your patient problem solver. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "create_ticket": "I'll create a support ticket for you right away.",
+    "check_ticket_status": "Let me check the status of your ticket.",
+    "search_knowledge_base": "Let me search our knowledge base for that information.",
+    "troubleshoot_issue": "I'll help you troubleshoot this issue step by step.",
+    "request_refund": "I'll process your refund request.",
+    "escalate_to_human": "I'll connect you with a human agent who can better assist you.",
+    "check_order_status": "Let me look up your order details.",
+    "update_account_info": "I'll update your account information.",
+    "report_bug": "Thank you for reporting this bug. I'll log it for our team.",
+    "request_feature": "That's a great suggestion! I'll submit your feature request.",
+    "acknowledge_frustration": "I understand this is frustrating. Let me help you resolve this as quickly as possible.",
+    "apology": "I sincerely apologize for the inconvenience. Let's work together to fix this.",
+    "clarification": "To better assist you, could you provide a bit more information about the issue?"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with issues, questions, or support needs?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2024-01-15",
+    "contact": "support@example.com",
+    "supported_languages": [
+      "en"
+    ],
+    "business_hours": "24/7",
+    "avg_response_time": "2 minutes",
+    "features": [
+      "ticket_creation",
+      "order_tracking",
+      "refund_processing",
+      "bug_reporting",
+      "kb_search",
+      "human_escalation"
+    ],
+    "sla": {
+      "critical": "1 hour",
+      "high": "4 hours",
+      "medium": "24 hours",
+      "low": "72 hours"
+    }
+  }
+}

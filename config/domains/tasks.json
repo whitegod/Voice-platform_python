@@ -1,0 +1,120 @@
+{
+  "domain_name": "tasks",
+  "description": "Task and productivity assistant for to-dos, reminders, and project management",
+  "system_prompt": "You are Org, a efficient productivity assistant. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with tasks, reminders, or productivity tips, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses organized and helpful, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "create_task",
+      "entities": [
+        "task_name",
+        "due_date",
+        "priority",
+        "category",
+        "notes"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/tasks",
+      "api_method": "POST",
+      "response_template": "Task created: '{task_name}'. Due: {due_date}. Priority: {priority}. Category: {category}. Task ID: {task_id}. Notes: {notes}. Reminder: {reminder_time}. Added to {list_name}",
+      "requires_auth": true
+    },
+    {
+      "name": "view_tasks",
+      "entities": [
+        "filter",
+        "due_date_range"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/tasks",
+      "api_method": "GET",
+      "response_template": "Your tasks ({filter}): {task_count} total. Today: {today_tasks}. Overdue: {overdue_count}. This week: {week_tasks}. High priority: {high_priority_count}. Completed today: {completed_today}",
+      "requires_auth": true
+    },
+    {
+      "name": "complete_task",
+      "entities": [
+        "task_id",
+        "task_name"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/tasks/{task_id}/complete",
+      "api_method": "PATCH",
+      "response_template": "✅ Task completed: '{task_name}'! Completed: {completion_time}. Streak: {completion_streak} days. Tasks completed today: {today_completed}. Remaining: {remaining_tasks}. Great job! 🎉",
+      "requires_auth": true
+    },
+    {
+      "name": "set_reminder",
+      "entities": [
+        "reminder_text",
+        "remind_time",
+        "repeat"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/reminders",
+      "api_method": "POST",
+      "response_template": "Reminder set: '{reminder_text}' at {remind_time}. Repeat: {repeat}. Reminder ID: {reminder_id}. Notification method: {notification_method}. Your reminders: {reminder_count} active",
+      "requires_auth": true
+    },
+    {
+      "name": "create_project",
+      "entities": [
+        "project_name",
+        "deadline",
+        "team_members"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/projects",
+      "api_method": "POST",
+      "response_template": "Project created: '{project_name}'. Deadline: {deadline}. Team: {team_members}. Project ID: {project_id}. Tasks: {task_count}. Milestones: {milestones}. Board: {project_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "productivity_stats",
+      "entities": [
+        "time_period"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/stats",
+      "api_method": "GET",
+      "response_template": "Productivity for {time_period}: Completed: {completed_count} tasks. Completion rate: {completion_rate}%. Average per day: {daily_average}. Most productive day: {best_day}. Categories: {category_breakdown}. Keep it up! 📊",
+      "requires_auth": true
+    },
+    {
+      "name": "reschedule_task",
+      "entities": [
+        "task_id",
+        "new_due_date"
+      ],
+      "api_endpoint": "https://api.tasks.example.com/v1/tasks/{task_id}",
+      "api_method": "PATCH",
+      "response_template": "Task rescheduled: '{task_name}' moved from {old_date} to {new_due_date}. Priority: {priority}. Reminder adjusted: {new_reminder}. Updated successfully!",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "productivity_tips",
+    "top_k": 5,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Org, your efficient productivity assistant. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "motivation": "🌟 You're making great progress! Keep going!",
+    "achievement": "🎉 Achievement unlocked: {achievement}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with tasks, reminders, or productivity tips?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "support_email": "support@tasks.example.com",
+    "features": [
+      "tasks",
+      "reminders",
+      "projects",
+      "collaboration",
+      "analytics",
+      "calendar_sync"
+    ],
+    "priorities": [
+      "low",
+      "medium",
+      "high",
+      "urgent"
+    ]
+  }
+}

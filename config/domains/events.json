@@ -1,0 +1,113 @@
+{
+  "domain_name": "events",
+  "description": "Event planning assistant for weddings, parties, corporate events, and gatherings",
+  "system_prompt": "You are Riley, a creative event planner. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with event planning, venues, or party ideas, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses enthusiastic and organized, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "search_venues",
+      "entities": [
+        "event_type",
+        "location",
+        "guest_count",
+        "date",
+        "budget"
+      ],
+      "api_endpoint": "https://api.events.example.com/v1/venues/search",
+      "api_method": "GET",
+      "response_template": "Found {venue_count} venues in {location} for {event_type}. Capacity: {guest_count} guests. Date: {date}. Best options: {venue_list}. Price range: ${price_range}. Amenities: {amenities}. Book a tour?",
+      "requires_auth": false
+    },
+    {
+      "name": "book_venue",
+      "entities": [
+        "venue_id",
+        "event_date",
+        "guest_count",
+        "package_type"
+      ],
+      "api_endpoint": "https://api.events.example.com/v1/venues/book",
+      "api_method": "POST",
+      "response_template": "Venue booked! {venue_name} for {event_date}. Guests: {guest_count}. Package: {package_type}. Booking ID: {booking_id}. Total: ${total_cost}. Deposit: ${deposit}. Includes: {included_services}. Coordinator: {coordinator_name}",
+      "requires_auth": true
+    },
+    {
+      "name": "find_vendors",
+      "entities": [
+        "vendor_type",
+        "location",
+        "event_date",
+        "style"
+      ],
+      "api_endpoint": "https://api.events.example.com/v1/vendors/search",
+      "api_method": "GET",
+      "response_template": "{vendor_type} vendors available on {event_date}: {vendor_list}. Style: {style}. Ratings: {ratings}. Pricing: {pricing}. Portfolios: {portfolio_links}. Reviews: {review_summary}",
+      "requires_auth": false
+    },
+    {
+      "name": "create_guest_list",
+      "entities": [
+        "event_id",
+        "guest_count"
+      ],
+      "api_endpoint": "https://api.events.example.com/v1/guests",
+      "api_method": "POST",
+      "response_template": "Guest list created for event {event_id}. Capacity: {guest_count}. RSVP tracking enabled. Send invitations: {invitation_tool}. Dietary preferences: {dietary_tracking}. Seating chart: {seating_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "manage_budget",
+      "entities": [
+        "event_id",
+        "total_budget"
+      ],
+      "api_endpoint": "https://api.events.example.com/v1/budget",
+      "api_method": "GET",
+      "response_template": "Event budget: ${total_budget}. Spent: ${spent} ({spent_percentage}%). Remaining: ${remaining}. Categories: {budget_breakdown}. Pending payments: ${pending}. Recommendations: {cost_savings}",
+      "requires_auth": true
+    },
+    {
+      "name": "create_timeline",
+      "entities": [
+        "event_id",
+        "event_date"
+      ],
+      "api_endpoint": "https://api.events.example.com/v1/timeline",
+      "api_method": "POST",
+      "response_template": "Event timeline created! {event_date}. {timeline_details}. Key milestones: {milestones}. Vendor schedule: {vendor_schedule}. Day-of timeline: {day_of_timeline}. Share with: {share_options}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "event_planning_guides",
+    "top_k": 6,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Riley, your creative event planner. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "inspiration": "💡 Event idea: {idea}",
+    "tip": "📝 Planning tip: {tip}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with event planning, venues, or party ideas?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "event_types": [
+      "wedding",
+      "birthday",
+      "corporate",
+      "baby_shower",
+      "anniversary",
+      "conference"
+    ],
+    "vendor_types": [
+      "catering",
+      "photography",
+      "music",
+      "florist",
+      "decoration",
+      "entertainment"
+    ]
+  }
+}

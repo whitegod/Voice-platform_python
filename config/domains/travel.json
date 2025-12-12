@@ -1,0 +1,144 @@
+{
+  "domain_name": "travel",
+  "description": "Travel booking assistant for flights, hotels, car rentals, and trip planning",
+  "system_prompt": "You are Sky, a excited travel advisor. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with flights, hotels, or trip planning, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses enthusiastic and helpful, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "search_flights",
+      "entities": [
+        "origin",
+        "destination",
+        "departure_date",
+        "return_date",
+        "passengers",
+        "class"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/flights/search",
+      "api_method": "GET",
+      "response_template": "Found {flight_count} flights from {origin} to {destination}. Departure: {departure_date}. Best price: ${lowest_price}. Options: {flight_options}. Direct flights: {direct_available}. Duration: {flight_duration}",
+      "requires_auth": false
+    },
+    {
+      "name": "book_flight",
+      "entities": [
+        "flight_id",
+        "passengers",
+        "seat_preference"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/flights/book",
+      "api_method": "POST",
+      "response_template": "Flight booked! Confirmation: {confirmation_code}. {airline} {flight_number} on {departure_date}. Passengers: {passengers}. Seats: {seats}. Total: ${total_price}. E-tickets sent to {email}. Check-in opens 24 hours before departure.",
+      "requires_auth": true
+    },
+    {
+      "name": "search_hotels",
+      "entities": [
+        "location",
+        "check_in",
+        "check_out",
+        "guests",
+        "rating",
+        "price_range"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/hotels/search",
+      "api_method": "GET",
+      "response_template": "Found {hotel_count} hotels in {location}. Check-in: {check_in}, Check-out: {check_out}. Best match: {top_hotel} - ${price}/night ({rating} stars). Amenities: {amenities}. {availability}",
+      "requires_auth": false
+    },
+    {
+      "name": "book_hotel",
+      "entities": [
+        "hotel_id",
+        "check_in",
+        "check_out",
+        "room_type",
+        "guests"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/hotels/book",
+      "api_method": "POST",
+      "response_template": "Hotel booked! {hotel_name} - {room_type} for {nights} nights. Confirmation: {confirmation_code}. Total: ${total_price}. Check-in: {check_in} after {check_in_time}. Check-out: {check_out} by {check_out_time}. Special requests: {special_requests}",
+      "requires_auth": true
+    },
+    {
+      "name": "rent_car",
+      "entities": [
+        "location",
+        "pickup_date",
+        "return_date",
+        "car_type"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/cars/rent",
+      "api_method": "POST",
+      "response_template": "Car rental confirmed! {car_type} from {company}. Pickup: {location} on {pickup_date}. Return: {return_date}. Rental ID: {rental_id}. Total: ${total_price}. Insurance: {insurance_type}. Unlimited mileage included.",
+      "requires_auth": true
+    },
+    {
+      "name": "trip_recommendations",
+      "entities": [
+        "destination",
+        "budget",
+        "travel_style",
+        "duration"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/recommendations",
+      "api_method": "GET",
+      "response_template": "Perfect trip to {destination}! {duration} days, {travel_style} style. Budget: ${budget}. Highlights: {attractions}. Best time: {best_season}. Suggested itinerary: {itinerary}. Local tips: {local_tips}",
+      "requires_auth": false
+    },
+    {
+      "name": "check_booking",
+      "entities": [
+        "confirmation_code",
+        "booking_type"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/bookings/{confirmation_code}",
+      "api_method": "GET",
+      "response_template": "Booking {confirmation_code} ({booking_type}): {booking_details}. Status: {status}. Travelers: {travelers}. Total paid: ${total_paid}. Documents: {documents_url}. Changes: {change_policy}",
+      "requires_auth": true
+    },
+    {
+      "name": "cancel_booking",
+      "entities": [
+        "confirmation_code",
+        "reason"
+      ],
+      "api_endpoint": "https://api.travel.example.com/v1/bookings/{confirmation_code}/cancel",
+      "api_method": "DELETE",
+      "response_template": "Booking {confirmation_code} cancelled. Reason: {reason}. Cancellation ID: {cancellation_id}. Refund: ${refund_amount} will be processed in {refund_days} days. Cancellation fee: ${cancellation_fee}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "travel_guides",
+    "top_k": 8,
+    "score_threshold": 0.65
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Sky, your excited travel advisor. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "travel_tip": "💡 Travel tip: {tip}",
+    "deal_alert": "🔥 Hot deal! {deal_description}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with flights, hotels, or trip planning?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "support_hotline": "1-800-TRAVEL",
+    "travel_types": [
+      "business",
+      "leisure",
+      "adventure",
+      "luxury",
+      "budget"
+    ],
+    "services": [
+      "flights",
+      "hotels",
+      "cars",
+      "packages",
+      "activities",
+      "insurance"
+    ]
+  }
+}

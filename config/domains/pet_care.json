@@ -1,0 +1,127 @@
+{
+  "domain_name": "pet_care",
+  "description": "Pet care assistant for veterinary appointments, pet supplies, and pet health",
+  "system_prompt": "You are Vet Emma, a caring animal specialist. Have natural, conversational interactions - never list technical intent names or commands. \n\nWhen users need help with pet health, vet appointments, or pet care advice, engage naturally: ask clarifying questions, show enthusiasm, and guide them smoothly. \n\nIf information is missing, ask conversationally (e.g., 'What works best for you?' not 'Please provide date_time entity'). \n\nKeep responses compassionate and knowledgeable, brief, and human-like. Never say things like technical intent names or list available capabilities - just help them naturally like a real person would.",
+  "intents": [
+    {
+      "name": "schedule_vet_appointment",
+      "entities": [
+        "pet_name",
+        "appointment_type",
+        "date",
+        "time",
+        "reason"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/appointments",
+      "api_method": "POST",
+      "response_template": "Vet appointment scheduled for {pet_name}! Type: {appointment_type}. Date: {date} at {time}. Reason: {reason}. Clinic: {clinic_name}. Vet: {vet_name}. Appointment ID: {appointment_id}. Bring: {required_documents}",
+      "requires_auth": true
+    },
+    {
+      "name": "track_vaccinations",
+      "entities": [
+        "pet_name"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/pets/{pet_name}/vaccinations",
+      "api_method": "GET",
+      "response_template": "{pet_name}'s vaccinations: Current: {current_vaccines}. Due soon: {upcoming_vaccines}. Next due: {next_vaccine} on {due_date}. History: {vaccination_history}. Certificate: {certificate_url}",
+      "requires_auth": true
+    },
+    {
+      "name": "find_pet_supplies",
+      "entities": [
+        "product_type",
+        "pet_type",
+        "brand"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/supplies/search",
+      "api_method": "GET",
+      "response_template": "Found {product_count} {product_type} for {pet_type}. Brand: {brand}. Top picks: {product_list}. Prices: {price_range}. Ratings: {ratings}. Delivery: {delivery_options}",
+      "requires_auth": false
+    },
+    {
+      "name": "log_pet_health",
+      "entities": [
+        "pet_name",
+        "health_metric",
+        "value",
+        "notes"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/health/log",
+      "api_method": "POST",
+      "response_template": "Health logged for {pet_name}: {health_metric} = {value}. Date: {log_date}. Notes: {notes}. Trend: {trend}. History: {recent_logs}. Reminders: {health_reminders}",
+      "requires_auth": true
+    },
+    {
+      "name": "pet_care_advice",
+      "entities": [
+        "pet_type",
+        "topic"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/advice",
+      "api_method": "GET",
+      "response_template": "{topic} advice for {pet_type}: {advice_content}. Key tips: {key_tips}. Warning signs: {warning_signs}. Resources: {resource_links}. ⚠️ For medical concerns, consult your veterinarian.",
+      "requires_auth": false
+    },
+    {
+      "name": "find_pet_sitter",
+      "entities": [
+        "pet_type",
+        "dates",
+        "location",
+        "services"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/sitters/search",
+      "api_method": "GET",
+      "response_template": "Pet sitters available for {pet_type} in {location}: {sitter_list}. Dates: {dates}. Services: {services}. Ratings: {ratings}. Prices: {pricing}. Reviews: {review_summary}",
+      "requires_auth": false
+    },
+    {
+      "name": "medication_reminder",
+      "entities": [
+        "pet_name",
+        "medication_name",
+        "dosage",
+        "schedule"
+      ],
+      "api_endpoint": "https://api.petcare.example.com/v1/medications",
+      "api_method": "POST",
+      "response_template": "Medication reminder set for {pet_name}: {medication_name}, {dosage}. Schedule: {schedule}. Reminder ID: {reminder_id}. Next dose: {next_dose_time}. Refill by: {refill_date}",
+      "requires_auth": true
+    }
+  ],
+  "context_retrieval": {
+    "enabled": true,
+    "collection_name": "pet_care_guides",
+    "top_k": 6,
+    "score_threshold": 0.7
+  },
+  "response_templates": {
+    "greeting": "Hi! I'm Vet Emma, your caring animal specialist. How can I help you today?",
+    "goodbye": "Great chatting with you! Come back anytime you need help!",
+    "emergency": "🚨 Pet emergency? Call your vet or emergency animal hospital immediately!",
+    "tip": "💡 Pet care tip: {tip}"
+  },
+  "fallback_response": "I want to help! Can you tell me more about what you need with pet health, vet appointments, or pet care advice?",
+  "max_turns": 50,
+  "metadata": {
+    "version": "1.0",
+    "emergency_vet": "Call your local emergency vet",
+    "pet_types": [
+      "dog",
+      "cat",
+      "bird",
+      "fish",
+      "rabbit",
+      "hamster",
+      "reptile"
+    ],
+    "services": [
+      "veterinary",
+      "grooming",
+      "training",
+      "boarding",
+      "pet_sitting"
+    ]
+  }
+}

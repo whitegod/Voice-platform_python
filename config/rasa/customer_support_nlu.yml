@@ -1,0 +1,174 @@
+version: "3.1"
+
+nlu:
+  # Customer Support Domain - Training Data
+
+  - intent: create_ticket
+    examples: |
+      - I need to create a support ticket
+      - Open a ticket for [billing issue](issue_type)
+      - I have a [technical problem](issue_type) with [Premium Plan](product_name)
+      - Create ticket - [high](priority) priority
+      - Report a [bug](issue_type) in the [mobile app](product_name)
+      - I need help with my [account](issue_type)
+      - Submit a ticket about [payment failure](description)
+      - [Critical](priority) issue with [login](issue_type)
+      - Something is broken in [website](product_name)
+      - File a complaint about [service](issue_type)
+
+  - intent: check_ticket_status
+    examples: |
+      - What's the status of ticket [12345](ticket_id)
+      - Check ticket [ABC-789](ticket_id)
+      - Where is my ticket [#5678](ticket_id)
+      - Status of [ticket 999](ticket_id)
+      - Any update on [12345](ticket_id)
+      - Is ticket [ABC123](ticket_id) resolved
+      - Track my support request [#456](ticket_id)
+      - Look up [ticket 789](ticket_id)
+
+  - intent: search_knowledge_base
+    examples: |
+      - How do I reset my password
+      - What are your [refund](category) policies
+      - Help with [account settings](query)
+      - How to [cancel subscription](query)
+      - [Installation](category) guide
+      - Explain [API rate limits](query)
+      - Where is the [user manual](query)
+      - FAQ about [pricing](category)
+      - Documentation for [webhooks](query)
+      - How does [billing](category) work
+
+  - intent: troubleshoot_issue
+    examples: |
+      - [Login not working](problem_type)
+      - Getting error [500 internal server](error_message)
+      - [Can't access my account](problem_type)
+      - [Payment failed](problem_type) on [mobile](device_type)
+      - [App crashes](problem_type) on [iPhone](device_type)
+      - Error message: [connection timeout](error_message)
+      - [Website won't load](problem_type) on [desktop](device_type)
+      - [Email not sending](problem_type)
+      - [Video playback issue](problem_type)
+      - [Authentication error](error_message)
+
+  - intent: request_refund
+    examples: |
+      - I want a refund for order [ORD-123](order_id)
+      - Refund [order 456](order_id) - [defective product](reason)
+      - Cancel and refund [#789](order_id)
+      - Process refund [$99.99](amount) for [order ABC](order_id)
+      - Request refund - [not satisfied](reason)
+      - Return [order 555](order_id) and get money back
+      - Refund my purchase [#222](order_id) - [wrong item](reason)
+      - I want my [$49.99](amount) back
+
+  - intent: escalate_to_human
+    examples: |
+      - I want to speak to a human
+      - Connect me with an agent
+      - Talk to real person
+      - Get me a human agent - [urgent](urgency)
+      - This isn't working, I need human help
+      - Escalate to supervisor
+      - Transfer me to support team
+      - I need to speak with someone - [complex issue](reason)
+      - Can I talk to a manager
+      - Real person please
+
+  - intent: check_order_status
+    examples: |
+      - Where is my order [ORD-456](order_id)
+      - Track order [#789](order_id)
+      - Order status for [ABC123](order_id)
+      - When will [order 999](order_id) arrive
+      - Has [order #555](order_id) shipped
+      - Delivery date for [my order 777](order_id)
+      - Check [order ORD-888](order_id)
+      - Order tracking [#111](order_id)
+
+  - intent: update_account_info
+    examples: |
+      - Change my [email](field_name) to [new@email.com](new_value)
+      - Update [phone number](field_name)
+      - Modify [billing address](field_name)
+      - Change [password](field_name)
+      - Update my [payment method](field_name)
+      - Edit [shipping address](field_name) to [123 Main St](new_value)
+      - Change [username](field_name)
+      - Update [profile picture](field_name)
+
+  - intent: report_bug
+    examples: |
+      - Report a bug - [button not clickable](bug_description)
+      - Found a bug in [payment flow](bug_description)
+      - [App crashes when clicking save](bug_description) - [high](severity)
+      - Bug: [data not saving](bug_description)
+      - [Login button broken](bug_description)
+      - Error when [uploading files](bug_description)
+      - [Critical](severity) bug - [data loss](bug_description)
+      - Something is wrong with [search feature](bug_description)
+
+  - intent: request_feature
+    examples: |
+      - Can you add [dark mode](feature_description)
+      - Feature request: [export to PDF](feature_description)
+      - I want [two-factor authentication](feature_description)
+      - Please add [custom themes](feature_description)
+      - Would like [offline mode](feature_description) for [mobile app](use_case)
+      - Suggest feature: [bulk operations](feature_description)
+      - Add [calendar integration](feature_description)
+      - Request [API webhooks](feature_description)
+
+  # Common intents
+  - intent: greet
+    examples: |
+      - hi
+      - hello
+      - hey there
+      - good morning
+      - good afternoon
+      - hi support
+      - hello customer service
+
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - thanks bye
+      - that's all
+      - thank you goodbye
+      - see you later
+      - have a good day
+
+  - intent: thank
+    examples: |
+      - thanks
+      - thank you
+      - thanks a lot
+      - appreciate it
+      - thanks for your help
+      - much appreciated
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yeah
+      - correct
+      - that's right
+      - exactly
+      - sure
+      - yep
+      - absolutely
+
+  - intent: deny
+    examples: |
+      - no
+      - nope
+      - not really
+      - no thanks
+      - that's not right
+      - incorrect
+      - negative
+
