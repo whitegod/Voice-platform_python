@@ -64,7 +64,7 @@ async def initialize_services():
         llm = LLMProvider(
             provider=llm_provider,
             model_name=os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview"),
-            temperature=0.7
+            temperature=float(os.getenv("LLM_TEMPERATURE", "0.7"))
         )
         
         nlu = RasaNLU(
@@ -124,7 +124,10 @@ async def initialize_services():
             enabled=os.getenv("ENABLE_ANALYTICS", "true").lower() == "true"
         )
         
-        data_adapter = DataAdapter(timeout=30, max_retries=3)
+        data_adapter = DataAdapter(
+            timeout=int(os.getenv("DATA_ADAPTER_TIMEOUT", "30")),
+            max_retries=int(os.getenv("DATA_ADAPTER_MAX_RETRIES", "3"))
+        )
         
         policy_planner = PolicyPlanner(
             rate_limit_per_minute=int(os.getenv("API_RATE_LIMIT_PER_MINUTE", "60")),
@@ -173,9 +176,9 @@ def main():
     """Main entry point"""
     try:
         # Create necessary directories
-        Path("logs").mkdir(exist_ok=True)
-        Path("tmp").mkdir(exist_ok=True)
-        Path("models").mkdir(exist_ok=True)
+        Path(os.getenv("LOGS_DIR", "logs")).mkdir(exist_ok=True)
+        Path(os.getenv("TMP_DIR", "tmp")).mkdir(exist_ok=True)
+        Path(os.getenv("MODELS_DIR", "models")).mkdir(exist_ok=True)
         
         # Initialize and run
         logger.info("=" * 60)

@@ -4,6 +4,7 @@ High-quality speech synthesis from text
 """
 
 import logging
+import os
 from pathlib import Path
 from typing import Optional, Union
 import torch
@@ -135,7 +136,7 @@ class CoquiTTS:
         self,
         audio_array: np.ndarray,
         output_path: Union[str, Path],
-        sample_rate: int = 22050
+        sample_rate: Optional[int] = None
     ) -> Path:
         """
         Save audio array to file.
@@ -149,6 +150,7 @@ class CoquiTTS:
             Path to saved file
         """
         try:
+            sample_rate = sample_rate if sample_rate is not None else int(os.getenv("TTS_SAMPLE_RATE", "22050"))
             output_path = Path(output_path)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             

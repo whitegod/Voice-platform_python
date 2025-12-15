@@ -3,6 +3,7 @@ Logging Configuration
 """
 
 import logging
+import os
 import sys
 from pathlib import Path
 from logging.handlers import RotatingFileHandler
@@ -10,11 +11,11 @@ from pythonjsonlogger import jsonlogger
 
 
 def setup_logging(
-    log_level: str = "INFO",
-    log_file: str = "logs/vaas.log",
-    max_bytes: int = 10485760,  # 10MB
-    backup_count: int = 5,
-    json_format: bool = False
+    log_level: str = None,
+    log_file: str = None,
+    max_bytes: int = None,
+    backup_count: int = None,
+    json_format: bool = None
 ):
     """
     Configure logging for the application.
@@ -26,6 +27,14 @@ def setup_logging(
         backup_count: Number of backup files to keep
         json_format: Whether to use JSON formatting
     """
+    # Use environment variables as defaults
+    log_level = log_level or os.getenv("LOG_LEVEL", "INFO")
+    logs_dir = os.getenv("LOGS_DIR", "logs")
+    log_file = log_file or f"{logs_dir}/vaas.log"
+    max_bytes = max_bytes if max_bytes is not None else int(os.getenv("LOG_MAX_BYTES", "10485760"))
+    backup_count = backup_count if backup_count is not None else int(os.getenv("LOG_BACKUP_COUNT", "5"))
+    json_format = json_format if json_format is not None else os.getenv("LOG_JSON_FORMAT", "false").lower() == "true"
+    
     # Create logs directory
     Path(log_file).parent.mkdir(parents=True, exist_ok=True)
 

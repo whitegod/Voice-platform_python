@@ -4,6 +4,7 @@ Intent recognition and entity extraction
 """
 
 import logging
+import os
 from typing import Dict, List, Any, Optional
 import httpx
 from pathlib import Path
@@ -21,7 +22,7 @@ class RasaNLU:
         self,
         rasa_endpoint: str = "http://localhost:5005",
         model_path: Optional[str] = None,
-        timeout: int = 30
+        timeout: Optional[int] = None
     ):
         """
         Initialize Rasa NLU client.
@@ -33,7 +34,7 @@ class RasaNLU:
         """
         self.rasa_endpoint = rasa_endpoint.rstrip("/")
         self.model_path = model_path
-        self.timeout = timeout
+        self.timeout = timeout if timeout is not None else int(os.getenv("RASA_TIMEOUT", "30"))
         
         logger.info(f"Initializing Rasa NLU with endpoint: {rasa_endpoint}")
 

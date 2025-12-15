@@ -4,6 +4,7 @@ Loads and validates domain configurations
 """
 
 import logging
+import os
 from typing import Dict, Any, Optional
 from pathlib import Path
 import json
@@ -202,7 +203,7 @@ class ConfigManager:
         if config and config.system_prompt:
             return config.system_prompt
         
-        return "You are a helpful assistant."
+        return os.getenv("DEFAULT_SYSTEM_PROMPT", "You are a helpful assistant.")
 
     def get_response_template(
         self,

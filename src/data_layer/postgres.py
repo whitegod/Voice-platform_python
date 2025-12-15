@@ -4,6 +4,7 @@ Primary database for persistent storage
 """
 
 import logging
+import os
 from typing import Optional, List, Dict, Any
 from contextlib import asynccontextmanager
 import asyncpg
@@ -25,8 +26,8 @@ class PostgresClient:
         database: str = "vaas_platform",
         user: str = "vaas_user",
         password: str = "",
-        min_pool_size: int = 5,
-        max_pool_size: int = 20
+        min_pool_size: Optional[int] = None,
+        max_pool_size: Optional[int] = None
     ):
         """
         Initialize PostgreSQL client.
@@ -45,8 +46,8 @@ class PostgresClient:
         self.database = database
         self.user = user
         self.password = password
-        self.min_pool_size = min_pool_size
-        self.max_pool_size = max_pool_size
+        self.min_pool_size = min_pool_size if min_pool_size is not None else int(os.getenv("POSTGRES_MIN_POOL_SIZE", "5"))
+        self.max_pool_size = max_pool_size if max_pool_size is not None else int(os.getenv("POSTGRES_MAX_POOL_SIZE", "20"))
         self.pool = None
         
         logger.info(f"Initializing Postgres client: {host}:{port}/{database}")

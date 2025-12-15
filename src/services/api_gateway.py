@@ -4,12 +4,12 @@ FastAPI-based REST API gateway for VaaS platform
 """
 
 import logging
+import os
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Header, status
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-import os
 from pathlib import Path
 import uuid
 
@@ -96,12 +96,33 @@ class APIGateway:
         )
         
         # Add CORS middleware
+        cors_origins = os.getenv("CORS_ALLOW_ORIGINS", "*")
+        if cors_origins == "*":
+            origins_list = ["*"]
+        else:
+            # Split comma-separated origins
+            origins_list = [origin.strip() for origin in cors_origins.split(",")]
+        
+        # Parse CORS methods
+        cors_methods = os.getenv("CORS_ALLOW_METHODS", "*")
+        if cors_methods == "*":
+            methods_list = ["*"]
+        else:
+            methods_list = [method.strip() for method in cors_methods.split(",")]
+        
+        # Parse CORS headers
+        cors_headers = os.getenv("CORS_ALLOW_HEADERS", "*")
+        if cors_headers == "*":
+            headers_list = ["*"]
+        else:
+            headers_list = [header.strip() for header in cors_headers.split(",")]
+        
         self.app.add_middleware(
             CORSMiddleware,
-            allow_origins=["*"],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
+            allow_origins=origins_list,
+            allow_credentials=os.getenv("CORS_ALLOW_CREDENTIALS", "true").lower() == "true",
+            allow_methods=methods_list,
+            allow_headers=headers_list,
         )
         
         # Register routes
@@ -218,7 +239,8 @@ class APIGateway:
                 # Generate audio if requested
                 audio_url = None
                 if request.return_audio:
-                    audio_path = Path(f"tmp/audio_{uuid.uuid4()}.wav")
+                    tmp_dir = os.getenv("TMP_DIR", "tmp")
+                    audio_path = Path(f"{tmp_dir}/audio_{uuid.uuid4()}.wav")
                     audio_path.parent.mkdir(parents=True, exist_ok=True)
                     
                     self.orchestrator.tts.synthesize(
@@ -276,7 +298,8 @@ class APIGateway:
                 logger.info(f"Processing voice request for tenant {tenant_id}")
 
                 # Save uploaded file
-                audio_path = Path(f"tmp/upload_{uuid.uuid4()}.wav")
+                tmp_dir = os.getenv("TMP_DIR", "tmp")
+                audio_path = Path(f"{tmp_dir}/upload_{uuid.uuid4()}.wav")
                 audio_path.parent.mkdir(parents=True, exist_ok=True)
                 
                 with open(audio_path, "wb") as f:
@@ -330,7 +353,8 @@ class APIGateway:
                 Audio file
             """
             try:
-                audio_path = Path(f"tmp/{filename}")
+                tmp_dir = os.getenv("TMP_DIR", "tmp")
+                audio_path = Path(f"{tmp_dir}/{filename}")
                 
                 if not audio_path.exists():
                     raise HTTPException(

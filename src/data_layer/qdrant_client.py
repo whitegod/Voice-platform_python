@@ -4,6 +4,7 @@ Semantic search and Retrieval-Augmented Generation (RAG)
 """
 
 import logging
+import os
 from typing import List, Dict, Any, Optional
 from qdrant_client import QdrantClient as QdrantSDK
 from qdrant_client.models import (
@@ -30,8 +31,8 @@ class QdrantVectorDB:
         api_key: Optional[str] = None,
         collection_name: str = "vaas_embeddings",
         vector_size: int = 384,  # Default for all-MiniLM-L6-v2
-        distance: Distance = Distance.COSINE,
-        embedding_model: str = "all-MiniLM-L6-v2"
+        distance: Optional[Distance] = None,
+        embedding_model: Optional[str] = None
     ):
         """
         Initialize Qdrant client.
@@ -50,10 +51,20 @@ class QdrantVectorDB:
         self.api_key = api_key
         self.collection_name = collection_name
         self.vector_size = vector_size
-        self.distance = distance
+        
+        # Use environment variable for distance metric
+        distance_str = os.getenv("QDRANT_DISTANCE_METRIC", "cosine").lower()
+        distance_mapping = {
+            "cosine": Distance.COSINE,
+            "dot": Distance.DOT,
+            "euclid": Distance.EUCLID,
+            "euclidean": Distance.EUCLID  # Alias for compatibility
+        }
+        self.distance = distance if distance is not None else distance_mapping.get(distance_str, Distance.COSINE)
+        
         self.client = None
         self.embedder = None
-        self.embedding_model = embedding_model
+        self.embedding_model = embedding_model or os.getenv("QDRANT_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
         
         logger.info(f"Initializing Qdrant client: {host}:{port}")
         self._connect()

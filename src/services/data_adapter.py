@@ -4,6 +4,7 @@ Handles external API integration and communication
 """
 
 import logging
+import os
 from typing import Dict, Any, Optional
 import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -36,7 +37,7 @@ class DataAdapter:
         self.max_retries = max_retries
         self.default_headers = default_headers or {
             "Content-Type": "application/json",
-            "User-Agent": "VaaS-Platform/1.0"
+            "User-Agent": os.getenv("DATA_ADAPTER_USER_AGENT", "VaaS-Platform/1.0")
         }
         
         logger.info("DataAdapter initialized")

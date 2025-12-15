@@ -4,6 +4,7 @@ Fast key-value store for conversational context
 """
 
 import logging
+import os
 import json
 from typing import Optional, Any, Dict
 import redis.asyncio as redis
@@ -75,7 +76,7 @@ class RedisClient:
         key: str,
         value: Any,
         ttl: Optional[int] = None,
-        namespace: str = "vaas"
+        namespace: Optional[str] = None
     ) -> bool:
         """
         Set a key-value pair.
@@ -90,6 +91,7 @@ class RedisClient:
             True if successful
         """
         try:
+            namespace = namespace or os.getenv("REDIS_NAMESPACE", "vaas")
             full_key = f"{namespace}:{key}"
             
             # Serialize value
@@ -109,7 +111,7 @@ class RedisClient:
     async def get(
         self,
         key: str,
-        namespace: str = "vaas",
+        namespace: Optional[str] = None,
         deserialize: bool = True
     ) -> Optional[Any]:
         """
@@ -124,6 +126,7 @@ class RedisClient:
             Value or None if not found
         """
         try:
+            namespace = namespace or os.getenv("REDIS_NAMESPACE", "vaas")
             full_key = f"{namespace}:{key}"
             value = await self.client.get(full_key)
             
@@ -143,7 +146,7 @@ class RedisClient:
             logger.error(f"Failed to get key {key}: {e}")
             return None
 
-    async def delete(self, key: str, namespace: str = "vaas") -> bool:
+    async def delete(self, key: str, namespace: Optional[str] = None) -> bool:
         """
         Delete a key.
 
@@ -155,6 +158,7 @@ class RedisClient:
             True if successful
         """
         try:
+            namespace = namespace or os.getenv("REDIS_NAMESPACE", "vaas")
             full_key = f"{namespace}:{key}"
             await self.client.delete(full_key)
             logger.debug(f"Deleted key: {full_key}")
@@ -164,9 +168,10 @@ class RedisClient:
             logger.error(f"Failed to delete key {key}: {e}")
             return False
 
-    async def exists(self, key: str, namespace: str = "vaas") -> bool:
+    async def exists(self, key: str, namespace: Optional[str] = None) -> bool:
         """Check if key exists"""
         try:
+            namespace = namespace or os.getenv("REDIS_NAMESPACE", "vaas")
             full_key = f"{namespace}:{key}"
             result = await self.client.exists(full_key)
             return result > 0
@@ -174,9 +179,10 @@ class RedisClient:
             logger.error(f"Failed to check key existence {key}: {e}")
             return False
 
-    async def expire(self, key: str, ttl: int, namespace: str = "vaas") -> bool:
+    async def expire(self, key: str, ttl: int, namespace: Optional[str] = None) -> bool:
         """Set expiration time for a key"""
         try:
+            namespace = namespace or os.getenv("REDIS_NAMESPACE", "vaas")
             full_key = f"{namespace}:{key}"
             await self.client.expire(full_key, ttl)
             return True
@@ -195,13 +201,12 @@ class RedisClient:
         return await self.set(
             f"session:{session_id}",
             session_data,
-            ttl=ttl,
-            namespace="vaas"
+            ttl=ttl
         )
 
     async def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Retrieve user session data"""
-        return await self.get(f"session:{session_id}", namespace="vaas")
+        return await self.get(f"session:{session_id}")
 
     async def update_session(
         self,
@@ -223,7 +228,7 @@ class RedisClient:
 
     async def delete_session(self, session_id: str) -> bool:
         """Delete user session"""
-        return await self.delete(f"session:{session_id}", namespace="vaas")
+        return await self.delete(f"session:{session_id}")
 
     # Cache methods
     async def cache_set(
@@ -236,13 +241,12 @@ class RedisClient:
         return await self.set(
             f"cache:{cache_key}",
             data,
-            ttl=ttl,
-            namespace="vaas"
+            ttl=ttl
         )
 
     async def cache_get(self, cache_key: str) -> Optional[Any]:
         """Get cached data"""
-        return await self.get(f"cache:{cache_key}", namespace="vaas")
+        return await self.get(f"cache:{cache_key}")
 
     async def health_check(self) -> bool:
         """Check Redis health"""
