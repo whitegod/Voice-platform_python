@@ -4,7 +4,7 @@ Sets up the database schema and creates sample tenant
 """
 
 import asyncio
-import sys
+import sysimport asyncio
 import os
 from pathlib import Path
 
