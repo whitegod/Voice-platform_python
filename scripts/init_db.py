@@ -3,7 +3,7 @@ Database Initialization Script
 Sets up the database schema and creates sample tenant
 """
 
-import asyncio
+
 import sysimport asyncio
 import os
 from pathlib import Path
