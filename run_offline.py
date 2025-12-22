@@ -51,11 +51,14 @@ print("""
 sessions = {}
 conversations = {}
 
-# Simple auth
-API_KEYS = {
-    "offline_demo_key": "demo_tenant",
-    "test_key_12345": "demo_tenant"
-}
+# Load API keys from environment or use demo keys
+import os
+demo_api_keys = os.getenv("OFFLINE_API_KEYS", "offline_demo_key:demo_tenant,test_key_12345:demo_tenant")
+API_KEYS = {}
+for key_pair in demo_api_keys.split(","):
+    if ":" in key_pair:
+        key, tenant = key_pair.strip().split(":", 1)
+        API_KEYS[key] = tenant
 
 # Load domain configurations
 DOMAINS = {}
@@ -482,6 +485,13 @@ async def get_session(session_id: str):
 def main():
     """Run the offline server"""
     
+    # Get configuration from environment
+    host = os.getenv("OFFLINE_HOST", "0.0.0.0")
+    port = int(os.getenv("OFFLINE_PORT", "8000"))
+    
+    # Get first API key for display
+    first_api_key = list(API_KEYS.keys())[0] if API_KEYS else "offline_demo_key"
+    
     print("=" * 70)
     print("✅ MODE: Completely Offline - No API Keys Needed!")
     print("=" * 70)
@@ -499,49 +509,48 @@ def main():
     print("API Server Starting...")
     print("=" * 70)
     print()
-    print("🌐 API Gateway:  http://localhost:8000")
-    print("📚 API Docs:     http://localhost:8000/docs")
-    print("❤️  Health:       http://localhost:8000/health")
+    print(f"🌐 API Gateway:  http://localhost:{port}")
+    print(f"📚 API Docs:     http://localhost:{port}/docs")
+    print(f"❤️  Health:       http://localhost:{port}/health")
     print()
-    print("🔑 Test API Key: offline_demo_key")
+    print(f"🔑 Test API Key: {first_api_key}")
     print()
     print("Example request:")
-    print('  curl -X POST "http://localhost:8000/api/v1/process/text" \\')
-    print('    -H "Authorization: Bearer offline_demo_key" \\')
+    print(f'  curl -X POST "http://localhost:{port}/api/v1/process/text" \\')
+    print(f'    -H "Authorization: Bearer {first_api_key}" \\')
     print('    -H "Content-Type: application/json" \\')
     print('    -d \'{"text": "How do I reset my password?", "user_id": "user1", "domain": "customer_support"}\'')
     print()
-    print("Or just open: http://localhost:8000/docs")
+    print(f"Or just open: http://localhost:{port}/docs")
     print()
     print("=" * 70)
     print("Press Ctrl+C to stop the server")
     print("=" * 70)
     print()
     
-    # Find available port
-    port = 8000
-    import socket
-    for try_port in range(8000, 8010):
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.bind(("0.0.0.0", try_port))
-            sock.close()
-            port = try_port
-            break
-        except OSError:
-            continue
-    
-    if port != 8000:
-        print(f"⚠️  Port 8000 is in use. Using port {port} instead.")
-        print(f"Access at: http://localhost:{port}/docs")
-        print()
+    # Find available port if auto-port is enabled
+    if os.getenv("AUTO_PORT", "false").lower() == "true":
+        import socket
+        for try_port in range(port, port + 10):
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.bind((host, try_port))
+                sock.close()
+                if try_port != port:
+                    print(f"⚠️  Port {port} is in use. Using port {try_port} instead.")
+                    print(f"Access at: http://localhost:{try_port}/docs")
+                    print()
+                port = try_port
+                break
+            except OSError:
+                continue
     
     # Run server
     uvicorn.run(
         app,
-        host="0.0.0.0",
+        host=host,
         port=port,
-        log_level="info"
+        log_level=os.getenv("LOG_LEVEL", "info").lower()
     )
 
 if __name__ == "__main__":

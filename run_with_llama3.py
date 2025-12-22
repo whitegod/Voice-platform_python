@@ -9,8 +9,13 @@ Voice-as-a-Service - Using Original Architecture
 
 import asyncio
 import logging
+import os
 from pathlib import Path
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Import all core components as specified
 from src.ai_core import WhisperASR, CoquiTTS, LLMProvider, RasaNLU, ContentModerator
@@ -20,7 +25,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 import uvicorn
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 logger = logging.getLogger(__name__)
 
 # Initialize Core Components with YOUR specifications
@@ -33,9 +38,9 @@ print()
 print("1. Loading Whisper ASR (local speech recognition)...")
 try:
     asr = WhisperASR(
-        model_name="base",  # Options: tiny, base, small, medium, large
-        device="cpu",       # Use "cuda" if you have GPU
-        language="en"
+        model_name=os.getenv("WHISPER_MODEL", "base"),  # Options: tiny, base, small, medium, large
+        device=os.getenv("WHISPER_DEVICE", "cpu"),      # Use "cuda" if you have GPU
+        language=os.getenv("WHISPER_LANGUAGE", "en")
     )
     print("   ✅ Whisper ASR loaded - Privacy-preserving voice input ready")
 except Exception as e:
@@ -47,8 +52,8 @@ except Exception as e:
 print("2. Loading Coqui TTS (speech synthesis)...")
 try:
     tts = CoquiTTS(
-        model_name="tts_models/en/ljspeech/tacotron2-DDC",
-        device="cpu"
+        model_name=os.getenv("TTS_MODEL", "tts_models/en/ljspeech/tacotron2-DDC"),
+        device=os.getenv("TTS_DEVICE", "cpu")
     )
     print("   ✅ Coqui TTS loaded - Human-like speech output ready")
 except Exception as e:
@@ -61,8 +66,8 @@ print("3. Loading Llama 3 (language model for reasoning)...")
 try:
     llm = LLMProvider(
         provider=LLMProviderType.LOCAL_LLAMA,
-        model_name="llama-3-8b-instruct",
-        temperature=0.7
+        model_name=os.getenv("LLAMA_MODEL", "llama-3-8b-instruct"),
+        temperature=float(os.getenv("LLM_TEMPERATURE", "0.7"))
     )
     print("   ✅ Llama 3 loaded - Local reasoning engine ready")
 except Exception as e:
@@ -75,7 +80,7 @@ except Exception as e:
 print("4. Connecting to Rasa NLU (intent detection)...")
 try:
     nlu = RasaNLU(
-        rasa_endpoint="http://localhost:5005"
+        rasa_endpoint=os.getenv("RASA_ENDPOINT", "http://localhost:5005")
     )
     print("   ✅ Rasa NLU connected - Intent detection ready")
 except Exception as e:
@@ -87,8 +92,8 @@ except Exception as e:
 print("5. Loading Detoxify (content moderation)...")
 try:
     moderator = ContentModerator(
-        model_name="original",
-        threshold=0.7
+        model_name=os.getenv("DETOXIFY_MODEL", "original"),
+        threshold=float(os.getenv("MODERATION_THRESHOLD", "0.7"))
     )
     print("   ✅ Detoxify loaded - Content safety ready")
 except Exception as e:
@@ -225,8 +230,9 @@ async def process_text(request: TextRequest):
         # Step 4: Text-to-Speech (Coqui TTS)
         audio_path = None
         if request.return_audio and tts:
-            audio_path = f"tmp/response_{session_id}.wav"
-            Path("tmp").mkdir(exist_ok=True)
+            tmp_dir = os.getenv("TMP_DIR", "tmp")
+            audio_path = f"{tmp_dir}/response_{session_id}.wav"
+            Path(tmp_dir).mkdir(exist_ok=True)
             tts.synthesize(response_text, output_path=audio_path)
         
         return ProcessResponse(
@@ -252,16 +258,21 @@ async def process_text(request: TextRequest):
 async def process_voice(
     audio_file: UploadFile = File(...),
     user_id: str = "default",
-    domain: str = "real_estate"
+    domain: str = None
 ):
     """Process voice using Whisper ASR"""
     
     if not asr:
         raise HTTPException(status_code=503, detail="Whisper ASR not available")
     
+    # Use default domain from env or fallback
+    if domain is None:
+        domain = os.getenv("DEFAULT_DOMAIN", "customer_support")
+    
     # Save uploaded audio
-    audio_path = f"tmp/upload_{user_id}.wav"
-    Path("tmp").mkdir(exist_ok=True)
+    tmp_dir = os.getenv("TMP_DIR", "tmp")
+    audio_path = f"{tmp_dir}/upload_{user_id}.wav"
+    Path(tmp_dir).mkdir(exist_ok=True)
     
     with open(audio_path, "wb") as f:
         content = await audio_file.read()
@@ -287,6 +298,9 @@ async def process_voice(
     }
 
 def main():
+    host = os.getenv("LLAMA_HOST", "0.0.0.0")
+    port = int(os.getenv("LLAMA_PORT", "8002"))
+    
     print("=" * 70)
     print("Voice-as-a-Service - Original Architecture")
     print("=" * 70)
@@ -298,13 +312,13 @@ def main():
     print("  4. Rasa - Intent detection and slots")
     print("  5. Detoxify - Content moderation")
     print()
-    print("Server starting on: http://localhost:8002")
-    print("API Docs: http://localhost:8002/docs")
+    print(f"Server starting on: http://localhost:{port}")
+    print(f"API Docs: http://localhost:{port}/docs")
     print()
     print("=" * 70)
     print()
     
-    uvicorn.run(app, host="0.0.0.0", port=8002)
+    uvicorn.run(app, host=host, port=port, log_level=os.getenv("LOG_LEVEL", "info").lower())
 
 if __name__ == "__main__":
     main()

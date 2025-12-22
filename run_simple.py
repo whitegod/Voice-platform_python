@@ -45,7 +45,13 @@ if not openai.api_key or not openai.api_key.startswith("sk-"):
 
 # In-memory storage (replaces Redis/PostgreSQL)
 sessions = {}
-api_keys = {"demo_key_12345": "demo_tenant"}  # Simple auth
+# Load API keys from environment or use demo keys
+demo_api_keys = os.getenv("DEMO_API_KEYS", "demo_key_12345:demo_tenant")
+api_keys = {}
+for key_pair in demo_api_keys.split(","):
+    if ":" in key_pair:
+        key, tenant = key_pair.strip().split(":", 1)
+        api_keys[key] = tenant
 
 # Load domain configurations
 DOMAINS = {}
@@ -129,8 +135,8 @@ async def process_with_openai(text: str, domain: str, session_id: Optional[str])
         response = client.chat.completions.create(
             model=os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview"),
             messages=messages,
-            temperature=0.7,
-            max_tokens=500
+            temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
+            max_tokens=int(os.getenv("LLM_MAX_TOKENS", "500"))
         )
         
         ai_response = response.choices[0].message.content
@@ -139,10 +145,10 @@ async def process_with_openai(text: str, domain: str, session_id: Optional[str])
         intent_prompt = f"Extract the primary intent from this text in one word: '{text}'\n\nIntents available: {', '.join([i['name'] for i in domain_config.get('intents', [])])}\n\nIntent:"
         
         intent_response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model=os.getenv("OPENAI_INTENT_MODEL", "gpt-3.5-turbo"),
             messages=[{"role": "user", "content": intent_prompt}],
             temperature=0,
-            max_tokens=10
+            max_tokens=int(os.getenv("INTENT_MAX_TOKENS", "10"))
         )
         
         intent = intent_response.choices[0].message.content.strip()
@@ -225,6 +231,12 @@ async def process_text(request: TextRequest):
 
 def main():
     """Run the simplified server"""
+    host = os.getenv("API_HOST", "0.0.0.0")
+    port = int(os.getenv("API_PORT", "8000"))
+    
+    # Get first API key for display
+    first_api_key = list(api_keys.keys())[0] if api_keys else "demo_key_12345"
+    
     print("=" * 70)
     print("Voice-as-a-Service Platform - Simplified Mode")
     print("=" * 70)
@@ -233,14 +245,14 @@ def main():
     print(f"✅ Loaded {len(DOMAINS)} domains")
     print("✅ Using OpenAI for all AI tasks")
     print()
-    print("API will be available at: http://localhost:8000")
-    print("API Docs: http://localhost:8000/docs")
+    print(f"API will be available at: http://localhost:{port}")
+    print(f"API Docs: http://localhost:{port}/docs")
     print()
-    print("Test API key: demo_key_12345")
+    print(f"Test API key: {first_api_key}")
     print()
     print("Example request:")
-    print('  curl -X POST "http://localhost:8000/api/v1/process/text" \\')
-    print('    -H "Authorization: Bearer demo_key_12345" \\')
+    print(f'  curl -X POST "http://localhost:{port}/api/v1/process/text" \\')
+    print(f'    -H "Authorization: Bearer {first_api_key}" \\')
     print('    -H "Content-Type: application/json" \\')
     print('    -d \'{"text": "test", "user_id": "user1", "domain": "customer_support"}\'')
     print()
@@ -250,9 +262,9 @@ def main():
     # Run server
     uvicorn.run(
         app,
-        host="0.0.0.0",
-        port=8000,
-        log_level="info"
+        host=host,
+        port=port,
+        log_level=os.getenv("LOG_LEVEL", "info").lower()
     )
 
 if __name__ == "__main__":

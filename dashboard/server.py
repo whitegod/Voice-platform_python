@@ -9,7 +9,8 @@ import socketserver
 import os
 from pathlib import Path
 
-PORT = 3000
+# Get configuration from environment
+PORT = int(os.getenv("DASHBOARD_PORT", "3000"))
 DIRECTORY = Path(__file__).parent
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -32,11 +33,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 if __name__ == "__main__":
     os.chdir(DIRECTORY)
     
+    api_port = os.getenv("API_PORT", "8000")
+    
     print("\n" + "="*70)
     print(" "*15 + "VaaS Enterprise Dashboard")
     print("="*70)
     print()
-    print("  🌐 Dashboard URL: http://localhost:3000")
+    print(f"  🌐 Dashboard URL: http://localhost:{PORT}")
     print("  📱 Access from: Your browser")
     print()
     print("  ✓ Professional UI")
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     print("  ✓ Domain management")
     print("  ✓ Analytics & insights")
     print()
-    print("  ⚠️  Make sure VaaS platform is running on port 8000!")
+    print(f"  ⚠️  Make sure VaaS platform is running on port {api_port}!")
     print()
     print("  Press Ctrl+C to stop the dashboard")
     print("="*70)
